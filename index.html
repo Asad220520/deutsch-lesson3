@@ -4,15 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Lektion 3 — DE–RU Phrase Trainer</title>
-    <meta name="description" content="Lerne 20 wichtige Sätze (Deutsch ↔ Russisch) mit Flashcards, Quiz & Sprachausgabe. Alles offline in einer Datei." />
+    <meta name="description" content="Логика урока и много практики: слушай → говори → пиши. RU→DE ввод, конструктор предложений, голос, объяснения, Лейтнер-повтор и дневная цель. Всё офлайн в одной странице." />
     <style>
       :root {
         --bg: #000;
         --panel: #0a0a0a;
-        --panel-2: #0a0a0a;
         --text: #f5f5f5;
         --muted: #a9a9a9;
         --border: #1f1f1f;
+        --ok: #2ecc71;
+        --bad: #ff7675;
+        --hint: #ffd166;
       }
       * { box-sizing: border-box; }
       html, body { height: 100%; }
@@ -22,196 +24,194 @@
         background: var(--bg);
         color: var(--text);
       }
-      /* больше нижний отступ, чтобы не перекрывать контент нижней панелью */
-      .wrap { max-width: 720px; margin-inline: auto; padding: 16px; padding-bottom: 112px; }
+      .wrap { max-width: 820px; margin-inline: auto; padding: 16px; padding-bottom: 128px; }
 
-      /* Header */
-      header { display: grid; gap: 8px; grid-template-columns: 1fr; }
-      .title {
-        font-size: clamp(20px, 5vw, 28px);
-        font-weight: 800; letter-spacing: 0.2px;
-        display: flex; align-items: center; gap: 10px;
-      }
+      header { display: grid; gap: 8px; }
+      .title { font-size: clamp(20px, 5vw, 28px); font-weight: 800; display:flex; gap:10px; align-items:center; }
       .subtitle { color: var(--muted); font-size: 14px; }
 
-      /* Panels & Cards */
       .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
-      .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-      .card {
-        background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
-        padding: 14px; display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center;
-      }
-      .de { font-weight: 700; font-size: 18px; }
-      .ru { color: var(--muted); margin-top: 2px; font-size: 15px; }
+      .grid { display:grid; grid-template-columns:1fr; gap:12px; }
 
-      /* Controls */
-      .controls { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 8px; }
-      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-      .flex { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
       input, select, button, .pill {
         appearance: none; background: #0b0b0b; border: 1px solid var(--border);
         color: var(--text); border-radius: 12px; padding: 12px 14px; font: inherit; min-height: 48px;
       }
-      input[type="number"] { width: 84px; }
       button { cursor: pointer; }
       button:active { transform: translateY(1px); }
-      .btn-accent { border-color: #fff; }
-      .actions { display: flex; gap: 6px; flex-wrap: wrap; }
-      .tiny { font-size: 12px; color: var(--muted); }
-      .hidden { display: none !important; }
-      .sr-only {
-        position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
-        clip: rect(0,0,0,0); white-space: nowrap; border:0;
-      }
+      .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+      .flex { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+      .tiny { font-size:12px; color:var(--muted); }
+      .hidden { display:none !important; }
+      .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
-      /* TABS — теперь внизу (fixed), как нижняя навигация */
+      /* bottom tabs */
       .tabs {
-        position: fixed;
-        left: 0; right: 0; bottom: 0;
-        z-index: 60;
-        background: rgba(0,0,0,0.9);
-        backdrop-filter: blur(6px);
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+        background: rgba(0,0,0,0.9); backdrop-filter: blur(6px);
         border-top: 1px solid var(--border);
         padding: 8px max(16px, env(safe-area-inset-left));
         padding-right: max(16px, env(safe-area-inset-right));
         padding-bottom: calc(8px + env(safe-area-inset-bottom));
-        display: flex; gap: 8px; justify-content: space-between;
-        margin: 0; /* убрали отрицательные отступы, они были нужны для топ-бара */
+        display: grid; grid-template-columns: repeat(8,1fr); gap: 8px; margin: 0;
       }
       .tab {
-        flex: 1;
-        height: 56px;
-        display: grid; place-items: center;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        background: #0a0a0a;
+        height: 56px; display: grid; place-items: center;
+        border: 1px solid var(--border); border-radius: 12px; background:#0a0a0a;
       }
       .tab.active { outline: 2px solid #fff; outline-offset: 2px; }
 
-      /* Flashcards */
-      .flash { display: grid; gap: 12px; }
-      .flash-card {
-        background: var(--panel); border: 1px solid var(--border); border-radius: 18px;
-        padding: 22px; text-align: center; min-height: 180px;
-        display: grid; place-items: center; gap: 6px; position: relative;
+      /* list card */
+      .card {
+        background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+        padding: 14px; display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center;
       }
-      .flash-card .face { font-size: 22px; font-weight: 800; }
-      .flash-card .sub { color: var(--muted); font-size: 16px; }
-      .flash-card .big-emoji { position: absolute; top: 12px; left: 12px; }
+      .de { font-weight: 800; font-size: 18px; }
+      .ru { color: var(--muted); margin-top: 2px; font-size: 15px; }
+      .actions { display:flex; gap:6px; flex-wrap:wrap; }
 
-      /* Quiz */
-      .quiz { display: grid; gap: 10px; }
-      .quiz-q { background: var(--panel); border: 1px solid var(--border); padding: 14px; border-radius: 14px; }
-      .answers { display: grid; gap: 8px; }
-      .answer { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: #0b0b0b; }
-      .answer.correct { outline: 2px solid #eaeaea; }
-      .answer.wrong { outline: 2px dashed #666; }
-      .score { font-weight: 700; }
+      /* learn / flash */
+      .flash-card {
+        background: var(--panel); border:1px solid var(--border); border-radius:18px;
+        padding:20px; text-align:center; min-height:160px; display:grid; place-items:center; gap:6px; position:relative;
+      }
+      .learn-big { font-size:22px; font-weight:800; text-align:center; }
+      .learn-sub { color:var(--muted); text-align:center; }
 
-      /* Verbs */
-      .vgrid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-      .vcard { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
-      .vcard h3 { margin: 0 0 8px 0; font-size: 18px; }
-      .vcard table { width: 100%; border-collapse: collapse; }
-      .vcard td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
-      .vcard tr:last-child td { border-bottom: 0; }
-      .cloze { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: grid; gap: 8px; }
-      .cloze .line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-      .cloze input { width: 120px; text-align: center; }
-      .ok { outline: 2px solid #d0ffd4; }
-      .bad { outline: 2px солид #ffb3c1; }
+      /* practice / feedback */
+      .feedback { padding:10px; border-radius:10px; border:1px solid var(--border); }
+      .good { background: rgba(46, 204, 113, 0.12); }
+      .badmsg { background: rgba(255, 118, 117, 0.12); }
+      mark.ok { background: rgba(46, 204, 113, 0.35); padding:2px 3px; border-radius:4px; }
+      mark.diff { background: rgba(255, 118, 117, 0.35); padding:2px 3px; border-radius:4px; }
+      .hint { background: rgba(255, 209, 102, 0.16); border:1px dashed #775; padding:8px; border-radius:8px; }
 
-      /* Numbers */
-      .numbers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .ncard { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: grid; gap: 6px; }
-      .nnum { font-size: 22px; font-weight: 800; }
-      .nword { color: var(--muted); }
+      /* builder */
+      .assembly { min-height: 52px; display:flex; flex-wrap:wrap; gap:8px; padding:10px; border:1px dashed var(--border); border-radius:10px; background:#0b0b0b; }
+      .tokens { display:flex; flex-wrap:wrap; gap:8px; }
+      .token { padding:8px 10px; background:#0b0b0b; border:1px solid var(--border); border-radius:10px; cursor:pointer; user-select:none; }
+      .token.used { opacity:0.35; pointer-events:none; }
 
-      /* Lucide icon sizes */
+      /* quiz */
+      .quiz { display:grid; gap:10px; }
+      .quiz-q { background: var(--panel); border:1px solid var(--border); padding:14px; border-radius:14px; }
+      .answers { display:grid; gap:8px; }
+      .answer { padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:#0b0b0b; }
+      .answer.correct { outline:2px solid #eaeaea; }
+      .answer.wrong { outline:2px dashed #666; }
+
+      /* dialogs */
+      dialog.modal {
+        border: 1px solid var(--border); border-radius: 16px; background:#0b0b0b; color:var(--text);
+        padding: 16px; max-width: 720px; width: 92vw;
+      }
+      dialog.modal::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
+      .modal-section { border-top:1px solid var(--border); padding-top:10px; margin-top:10px; }
+      .modal-title { font-weight:800; font-size:18px; display:flex; gap:8px; align-items:center; }
+
+      /* daily goal */
+      .goal { display:grid; gap:6px; }
+      .bar { height: 8px; background:#0b0b0b; border:1px solid var(--border); border-radius:999px; overflow:hidden; }
+      .bar-fill { height:100%; width:0%; background: linear-gradient(90deg, #8ec5ff, #e3ffe7); transition: width .25s ease; }
+
+      /* icons */
       .lci { width: 28px; height: 28px; stroke: currentColor; }
       .big-lci { width: 44px; height: 44px; stroke: currentColor; }
-
-      /* Settings dialog */
-      dialog.settings {
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        background: #0b0b0b;
-        color: var(--text);
-        padding: 16px;
-        max-width: 640px;
-        width: 92vw;
-      }
-      dialog.settings::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
-      .settings-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-      .settings-row { display: grid; grid-template-columns: 160px 1fr; gap: 10px; align-items: center; }
-      @media (max-width: 520px) { .settings-row { grid-template-columns: 1fr; } }
     </style>
     <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
   </head>
   <body>
     <div class="wrap">
       <header>
-        <div>
-          <div class="title">
-            <i data-lucide="book-open" class="lci"></i>
-            Lektion 3 — DE–RU Phrase Trainer
+        <div class="title"><i data-lucide="book-open" class="lci"></i> Lektion 3 — DE–RU Phrase Trainer</div>
+        <div class="subtitle">Учёба → Практика → Конструктор → Тест → Повтор. Объяснения и голосовые инструменты.</div>
+        <div class="goal panel">
+          <div class="row" style="justify-content:space-between;">
+            <div class="tiny">🎯 Цель на сегодня: <strong><span id="goalDone">0</span>/<span id="goalTotal">20</span></strong></div>
+            <button id="openSettings" title="Настройки"><i data-lucide="settings-2" class="lci"></i></button>
           </div>
-          <div class="subtitle">20 wichtige Sätze · Озвучка · Флеш-карточки · Тест</div>
+          <div class="bar"><div id="goalFill" class="bar-fill"></div></div>
         </div>
       </header>
 
-      <section class="controls panel" aria-label="Einstellungen">
+      <!-- Поиск -->
+      <section class="panel" aria-label="Поиск">
         <div class="row">
           <label class="pill" style="display:flex;align-items:center;gap:8px;">
             <i data-lucide="search" class="lci" aria-hidden="true"></i>
-            <span class="sr-only">Поиск</span>
             <input id="search" type="text" placeholder="Найти: слово на нем./рус." aria-label="Поиск" />
           </label>
-
-          <button id="shuffle" class="btn-accent" title="Перемешать" aria-label="Перемешать">
-            <i data-lucide="shuffle" class="lci"></i>
-          </button>
-
-          <!-- Settings button opens modal -->
-          <button id="openSettings" title="Настройки" aria-label="Настройки">
-            <i data-lucide="settings-2" class="lci"></i>
-          </button>
+          <button id="shuffle" title="Перемешать"><i data-lucide="shuffle" class="lci"></i></button>
         </div>
       </section>
 
-      <!-- LIST MODE -->
-      <section id="tab-list" class="tab-panel" role="tabpanel" aria-labelledby="Список">
+      <!-- Список -->
+      <section id="tab-list" class="tab-panel" role="tabpanel">
         <div id="list" class="grid" aria-live="polite"></div>
       </section>
 
-      <!-- FLASHCARDS MODE -->
-      <section id="tab-flash" class="tab-panel hidden" role="tabpanel" aria-labelledby="Карточки">
-        <div class="flash">
-          <div class="flash-card" id="flashCard" tabindex="0" aria-label="Карточка — нажмите чтобы перевернуть">
-            <div class="big-emoji" id="flashEmoji"><i data-lucide="message-square" class="big-lci"></i></div>
-            <div class="face" id="flashFront">…</div>
-            <div class="sub" id="flashBack">&nbsp;</div>
+      <!-- Учёба (слушай/смотри/объясни) -->
+      <section id="tab-learn" class="tab-panel hidden" role="tabpanel">
+        <div class="flash-card">
+          <div class="learn-big" id="learnFront">…</div>
+          <div class="learn-sub" id="learnBack">Нажмите «Показать перевод»</div>
+        </div>
+        <div class="row" style="margin-top:6px;">
+          <button id="learnPrev" title="Назад"><i data-lucide="chevron-left" class="lci"></i></button>
+          <button id="learnSpeakDE" title="Озвучить (DE)"><i data-lucide="volume" class="lci"></i></button>
+          <button id="learnSpeakRU" title="Озвучить (RU)"><i data-lucide="volume-2" class="lci"></i></button>
+          <button id="learnReveal" title="Показать перевод"><i data-lucide="eye" class="lci"></i></button>
+          <button id="learnExplain" title="Объяснить"><i data-lucide="book-marked" class="lci"></i></button>
+          <button id="learnNext" title="Вперёд"><i data-lucide="chevron-right" class="lci"></i></button>
+        </div>
+        <div class="tiny" style="margin-top:6px;">Шаг: 1) послушайте DE, 2) повторите, 3) сравните с переводом, 4) откройте «Объяснить», если что-то непонятно.</div>
+      </section>
+
+      <!-- Практика (RU→DE ввод + голос) -->
+      <section id="tab-practice" class="tab-panel hidden" role="tabpanel">
+        <div class="panel">
+          <div class="tiny">Напишите по-немецки. Можно подсказки и голосовой ввод.</div>
+          <div id="prTask" class="learn-big" style="margin-top:6px;">…</div>
+          <input id="prInput" type="text" placeholder="Введите перевод на немецкий..." />
+          <div class="row" style="margin-top:6px;">
+            <button id="prHint"><i data-lucide="lightbulb" class="lci"></i> Подсказка</button>
+            <button id="prMic" class="hidden"><i data-lucide="mic" class="lci"></i> Сказать</button>
+            <button id="prCheck" class="btn-accent"><i data-lucide="check" class="lci"></i> Проверить</button>
+            <button id="prExplain"><i data-lucide="book-marked" class="lci"></i> Объяснить</button>
+            <button id="prNext"><i data-lucide="chevron-right" class="lci"></i> Далее</button>
           </div>
-          <div class="flex">
-            <button id="flashPrev" title="Назад"><i data-lucide="chevron-left" class="lci"></i></button>
-            <button id="flashSpeakDE" class="btn-accent" title="Немецкий"><i data-lucide="volume" class="lci"></i></button>
-            <button id="flashSpeakRU" title="Русский"><i data-lucide="volume-2" class="lci"></i></button>
-            <button id="flashReveal" title="Показать перевод"><i data-lucide="eye" class="lci"></i></button>
-            <button id="flashNext" title="Вперёд"><i data-lucide="chevron-right" class="lci"></i></button>
-          </div>
-          <div class="tiny">Подсказка: пробел — перевернуть; ←/→ — навигация.</div>
+          <div id="prVoice" class="tiny hidden" style="margin-top:4px;"></div>
+          <div id="prFeedback" class="feedback hidden" style="margin-top:8px;"></div>
+          <div id="prHintBox" class="hint hidden" style="margin-top:6px;"></div>
+          <div class="tiny" style="margin-top:6px;">Прогресс: <span id="prProgress">0 / 0</span>. Ошибки: <span id="prMistakes">0</span></div>
         </div>
       </section>
 
-      <!-- QUIZ MODE -->
-      <section id="tab-quiz" class="tab-panel hidden" role="tabpanel" aria-labelledby="Тест">
+      <!-- Конструктор предложений (собери из слов) -->
+      <section id="tab-build" class="tab-panel hidden" role="tabpanel">
+        <div class="panel">
+          <div class="tiny">Соберите немецкое предложение из слов в правильном порядке.</div>
+          <div id="bdTask" class="learn-big" style="margin-top:6px;">…</div>
+          <div id="bdAssembly" class="assembly" aria-label="Собранная фраза"></div>
+          <div id="bdTokens" class="tokens" aria-label="Слова для фразы" style="margin-top:8px;"></div>
+          <div class="row" style="margin-top:8px;">
+            <button id="bdHint"><i data-lucide="lightbulb" class="lci"></i> Подсказка</button>
+            <button id="bdClear"><i data-lucide="eraser" class="lci"></i> Очистить</button>
+            <button id="bdCheck" class="btn-accent"><i data-lucide="check" class="lci"></i> Проверить</button>
+            <button id="bdExplain"><i data-lucide="book-marked" class="lci"></i> Объяснить</button>
+            <button id="bdNext"><i data-lucide="chevron-right" class="lci"></i> Далее</button>
+          </div>
+          <div id="bdFeedback" class="feedback hidden" style="margin-top:8px;"></div>
+        </div>
+      </section>
+
+      <!-- Тест -->
+      <section id="tab-quiz" class="tab-panel hidden" role="tabpanel">
         <div class="quiz">
-          <div class="flex">
-            <button id="quizStart" class="btn-accent" title="Начать тест">
-              <i data-lucide="play" class="lci"></i> Начать тест (10 вопросов)
-            </button>
+          <div class="row">
+            <button id="quizStart" class="btn-accent" title="Начать тест"><i data-lucide="play" class="lci"></i> Начать тест (10 вопросов)</button>
             <div class="pill" style="display:flex;align-items:center;gap:8px;">
-              <i data-lucide="line-chart" class="lci" aria-hidden="true"></i>
+              <i data-lucide="line-chart" class="lci"></i>
               <span>Результат: <span id="quizScore" class="score">0 / 0</span></span>
             </div>
           </div>
@@ -219,300 +219,269 @@
         </div>
       </section>
 
-      <!-- VERBS MODE -->
-      <section id="tab-verbs" class="tab-panel hidden" role="tabpanel" aria-labelledby="Глаголы">
-        <div class="vgrid" id="verbs"></div>
-        <div class="cloze" id="moechtenCloze">
-          <strong>Вставьте подходящую форму глагола „möchten“:</strong>
-          <div class="line"><span>1.</span> <strong>Ich</strong> <input data-a="moechte|möchte" /> ein Eis. <span class="tiny">(Я хочу мороженое.)</span></div>
-          <div class="line"><span>2.</span> <strong>Du</strong> <input data-a="moechtest|möchtest" /> einen Kaffee? <span class="tiny">(Ты хочешь кофе?)</span></div>
-          <div class="line"><span>3.</span> <strong>Er</strong> <input data-a="moechte|möchte" /> ein Buch lesen. <span class="tiny">(Он хочет прочитать книгу.)</span></div>
-          <div class="line"><span>4.</span> <strong>Wir</strong> <input data-a="moechten|möchten" /> ein Zimmer mit Meerblick. <span class="tiny">(Мы хотим номер с видом на море.)</span></div>
-          <div class="line"><span>5.</span> <strong>Ihr</strong> <input data-a="moechtet|möchtet" /> eine Cola? <span class="tiny">(Вы хотите колу?)</span></div>
-          <div class="line"><span>6.</span> <strong>Sie</strong> <input data-a="moechten|möchten" /> ein Ticket nach Berlin. <span class="tiny">(Они хотят билет до Берлина.)</span></div>
-          <div class="row">
-            <button id="moeCheck" class="btn-accent">Проверить</button>
-            <button id="moeShow">Показать ответы</button>
+      <!-- Повтор (Лейтнер) -->
+      <section id="tab-review" class="tab-panel hidden" role="tabpanel">
+        <div class="panel">
+          <div class="row" style="justify-content:space-between;">
+            <div>Повтор по карточкам Лейтнера</div>
+            <div class="tiny">Должно сегодня: <strong id="rvDue">0</strong></div>
+          </div>
+          <div id="rvTask" class="learn-big" style="margin-top:6px;">Нажмите «Начать»</div>
+          <input id="rvInput" type="text" placeholder="Напишите по-немецки…" />
+          <div class="row" style="margin-top:6px;">
+            <button id="rvStart"><i data-lucide="refresh-ccw" class="lci"></i> Начать</button>
+            <button id="rvCheck" class="btn-accent"><i data-lucide="check" class="lci"></i> Проверить</button>
+            <button id="rvHard"><i data-lucide="alert-triangle" class="lci"></i> Сложно</button>
+            <button id="rvNext"><i data-lucide="chevron-right" class="lci"></i> Далее</button>
+          </div>
+          <div id="rvFeedback" class="feedback hidden" style="margin-top:8px;"></div>
+          <div class="tiny" style="margin-top:6px;">Коробки: <span id="rvStats">—</span></div>
+        </div>
+      </section>
+
+      <!-- Глаголы -->
+      <section id="tab-verbs" class="tab-panel hidden" role="tabpanel">
+        <div id="verbs"></div>
+        <div class="panel" style="margin-top:12px;">
+          <strong>Вставьте форму „möchten“:</strong>
+          <div class="row" style="flex-direction:column;align-items:flex-start;">
+            <div>1. <b>Ich</b> <input data-a="moechte|möchte" /> ein Eis.</div>
+            <div>2. <b>Du</b> <input data-a="moechtest|möchtest" /> einen Kaffee?</div>
+            <div>3. <b>Er</b> <input data-a="moechte|möchte" /> ein Buch lesen.</div>
+            <div>4. <b>Wir</b> <input data-a="moechten|möchten" /> ein Zimmer mit Meerblick.</div>
+            <div>5. <b>Ihr</b> <input data-a="moechtet|möchtet" /> eine Cola?</div>
+            <div>6. <b>Sie</b> <input data-a="moechten|möchten" /> ein Ticket nach Berlin.</div>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <button id="moeCheck"><i data-lucide="check" class="lci"></i> Проверить</button>
+            <button id="moeShow"><i data-lucide="eye" class="lci"></i> Показать ответы</button>
           </div>
         </div>
       </section>
 
-      <!-- NUMBERS MODE -->
-      <section id="tab-numbers" class="tab-panel hidden" role="tabpanel" aria-labelledby="Числа">
+      <!-- Числа -->
+      <section id="tab-numbers" class="tab-panel hidden" role="tabpanel">
         <div class="panel">
           <div class="row">
             <label class="pill" style="display:flex;align-items:center;gap:8px;">
-              <i data-lucide="search" class="lci" aria-hidden="true"></i>
-              <span class="sr-only">Поиск числа</span>
+              <i data-lucide="search" class="lci"></i>
               <input id="numSearch" type="text" placeholder="Поиск: 21 / einundzwanzig" aria-label="Поиск числа" />
             </label>
             <button id="numShuffle" title="Перемешать"><i data-lucide="shuffle" class="lci"></i></button>
           </div>
         </div>
-        <div id="numbers" class="numbers-grid" aria-live="polite"></div>
+        <div id="numbers" class="grid" aria-live="polite" style="grid-template-columns:repeat(2,1fr);"></div>
       </section>
     </div>
 
-    <!-- нижняя панель вкладок -->
+    <!-- bottom nav -->
     <nav class="tabs" role="tablist" aria-label="Навигация">
-      <button class="tab active" data-tab="list" role="tab" aria-selected="true" title="Список" aria-label="Список">
-        <i data-lucide="book" class="lci"></i>
-      </button>
-      <button class="tab" data-tab="flash" role="tab" aria-selected="false" title="Карточки" aria-label="Карточки">
-        <i data-lucide="layers" class="lci"></i>
-      </button>
-      <button class="tab" data-tab="quiz" role="tab" aria-selected="false" title="Тест" aria-label="Тест">
-        <i data-lucide="edit-3" class="lci"></i>
-      </button>
-      <button class="tab" data-tab="verbs" role="tab" aria-selected="false" title="Глаголы" aria-label="Глаголы">
-        <i data-lucide="type" class="lci"></i>
-      </button>
-      <button class="tab" data-tab="numbers" role="tab" aria-selected="false" title="Числа" aria-label="Числа">
-        <i data-lucide="hash" class="lci"></i>
-      </button>
+      <button class="tab active" data-tab="list" title="Список"><i data-lucide="list" class="lci"></i></button>
+      <button class="tab" data-tab="learn" title="Учёба"><i data-lucide="graduation-cap" class="lci"></i></button>
+      <button class="tab" data-tab="practice" title="Практика"><i data-lucide="keyboard" class="lci"></i></button>
+      <button class="tab" data-tab="build" title="Конструктор"><i data-lucide="puzzle" class="lci"></i></button>
+      <button class="tab" data-tab="quiz" title="Тест"><i data-lucide="edit-3" class="lci"></i></button>
+      <button class="tab" data-tab="review" title="Повтор"><i data-lucide="repeat" class="lci"></i></button>
+      <button class="tab" data-tab="verbs" title="Глаголы"><i data-lucide="type" class="lci"></i></button>
+      <button class="tab" data-tab="numbers" title="Числа"><i data-lucide="hash" class="lci"></i></button>
     </nav>
 
-    <!-- SETTINGS DIALOG -->
-    <dialog id="settingsDialog" class="settings" aria-label="Настройки">
-      <form method="dialog" class="settings-grid">
-        <div class="settings-row">
-          <label for="difficulty"><strong>Сложность</strong></label>
-          <select id="difficulty" aria-label="Сложность">
+    <!-- SETTINGS -->
+    <dialog id="settingsDialog" class="modal" aria-label="Настройки">
+      <div class="modal-title"><i data-lucide="settings-2" class="lci"></i> Настройки</div>
+      <div class="modal-section">
+        <label>Сложность
+          <select id="difficulty">
             <option value="all">Все</option>
             <option value="short">Короткие</option>
             <option value="long">Длинные</option>
           </select>
-        </div>
-        <div class="settings-row">
-          <label for="voiceDE"><strong>Голос (DE)</strong></label>
-          <select id="voiceDE" aria-label="Голос для немецкого"></select>
-        </div>
-        <div class="settings-row">
-          <label for="voiceRU"><strong>Голос (RU)</strong></label>
-          <select id="voiceRU" aria-label="Голос для русского"></select>
-        </div>
-        <div class="settings-row">
-          <label for="rate"><strong>Скорость речи</strong></label>
-          <input id="rate" type="number" min="0.6" max="1.4" step="0.1" value="1.0" aria-label="Скорость речи" />
-        </div>
-        <div class="row" style="justify-content:flex-end;">
-          <button id="closeSettings" class="btn-accent" value="close">
-            <i data-lucide="check" class="lci"></i> Готово
-          </button>
-        </div>
-      </form>
+        </label>
+      </div>
+      <div class="modal-section">
+        <label>Голос (DE)
+          <select id="voiceDE"></select>
+        </label>
+      </div>
+      <div class="modal-section">
+        <label>Голос (RU)
+          <select id="voiceRU"></select>
+        </label>
+      </div>
+      <div class="modal-section">
+        <label>Скорость речи
+          <input id="rate" type="number" min="0.6" max="1.4" step="0.1" value="1.0" />
+        </label>
+      </div>
+      <div class="row" style="justify-content:flex-end;margin-top:10px;">
+        <button id="closeSettings"><i data-lucide="check" class="lci"></i> Готово</button>
+      </div>
+    </dialog>
+
+    <!-- EXPLAIN -->
+    <dialog id="explainDialog" class="modal" aria-label="Объяснение">
+      <div class="modal-title"><i data-lucide="book-marked" class="lci"></i> Объяснение</div>
+      <div id="explainBody" class="modal-section">…</div>
+      <div class="row" style="justify-content:flex-end;margin-top:10px;">
+        <button id="closeExplain"><i data-lucide="x" class="lci"></i> Закрыть</button>
+      </div>
     </dialog>
 
     <script>
-      // ===== DATA (20 фраз) =====
+      /* ============== DATA & EXPLANATIONS ============== */
       const DATA = [
-        { id: 1,  de: "Wir möchten heute tanzen.",             ru: "Мы сегодня хотим танцевать." },
-        { id: 2,  de: "Ich mag Pizza essen.",                  ru: "Мне нравится пицца." },
-        { id: 3,  de: "Ich möchte in Deutschland arbeiten.",   ru: "Я хочу работать в Германии." },
-        { id: 4,  de: "Du bist sehr schön.",                   ru: "Ты очень красивая(ый)." },
-        { id: 5,  de: "Mein Bruder ist klein.",                ru: "Мой брат маленький." },
-        { id: 6,  de: "Meine Eltern sind in Naryn.",           ru: "Мои родители в Нарыне." },
-        { id: 7,  de: "Ich habe große Familie.",               ru: "У меня большая семья." },
-        { id: 8,  de: "Er hat 2 Kinder.",                      ru: "У него 2 детей." },
-        { id: 9,  de: "Wir haben viele Hausaufgaben.",         ru: "У нас много дом. заданий." },
-        { id: 10, de: "Mein Name ist Aizhan.",                 ru: "Моё имя Айжан." },
-        { id: 11, de: "Bist du aus Osch?",                     ru: "Ты из Оша?" },
-        { id: 12, de: "Ich weiß nicht.",                       ru: "Я не знаю." },
-        { id: 13, de: 'Wir wissen das Wort "Glas" nicht.',     ru: 'Мы не знаем слово "стакан".' },
-        { id: 14, de: "Mein Kopf tut mir weh.",                ru: "У меня болит голова." },
-        { id: 15, de: "Magst du Deutsch lernen?",              ru: "Тебе нравится учить немецкий?" },
-        { id: 16, de: "Hast du heute Freizeit?",               ru: "У тебя есть сегодня свободное время?" },
-        { id: 17, de: "Sind Sie krank?",                       ru: "Вы болеете? / Вы больны?" },
-        { id: 18, de: "Ich bin ein bisschen müde.",            ru: "Я немного уставший." },
-        { id: 19, de: "Habt ihr noch Fragen?",                 ru: "У вас есть ещё вопросы?" },
-        { id: 20, de: "Ich habe keine Zeit.",                  ru: "У меня нет времени." }
+        { id:1,  de:"Wir möchten heute tanzen.",             ru:"Мы сегодня хотим танцевать." },
+        { id:2,  de:"Ich mag Pizza essen.",                  ru:"Мне нравится пицца." },
+        { id:3,  de:"Ich möchte in Deutschland arbeiten.",   ru:"Я хочу работать в Германии." },
+        { id:4,  de:"Du bist sehr schön.",                   ru:"Ты очень красивая(ый)." },
+        { id:5,  de:"Mein Bruder ist klein.",                ru:"Мой брат маленький." },
+        { id:6,  de:"Meine Eltern sind in Naryn.",           ru:"Мои родители в Нарыне." },
+        { id:7,  de:"Ich habe eine große Familie.",          ru:"У меня большая семья." },
+        { id:8,  de:"Er hat zwei Kinder.",                   ru:"У него два ребёнка." },
+        { id:9,  de:"Wir haben viele Hausaufgaben.",         ru:"У нас много домашних заданий." },
+        { id:10, de:"Mein Name ist Aizhan.",                 ru:"Моё имя Айжан." },
+        { id:11, de:"Kommst du aus Osch?",                   ru:"Ты из Оша?" },
+        { id:12, de:"Ich weiß nicht.",                       ru:"Я не знаю." },
+        { id:13, de:'Wir wissen das Wort „Glas“ nicht.',     ru:'Мы не знаем слово «стакан».' },
+        { id:14, de:"Mein Kopf tut mir weh.",                ru:"У меня болит голова." },
+        { id:15, de:"Lernst du gern Deutsch?",               ru:"Тебе нравится учить немецкий?" },
+        { id:16, de:"Hast du heute Freizeit?",               ru:"У тебя есть сегодня свободное время?" },
+        { id:17, de:"Sind Sie krank?",                       ru:"Вы болеете? / Вы больны?" },
+        { id:18, de:"Ich bin ein bisschen müde.",            ru:"Я немного уставший." },
+        { id:19, de:"Habt ihr noch Fragen?",                 ru:"У вас есть ещё вопросы?" },
+        { id:20, de:"Ich habe keine Zeit.",                  ru:"У меня нет времени." },
       ];
 
-      const ICONS = {
-        1: "music", 2: "pizza", 3: "briefcase", 4: "sparkles", 5: "user",
-        6: "map-pin", 7: "users", 8: "baby", 9: "book-open", 10: "badge",
-        11: "map-pin", 12: "help-circle", 13: "cup-soda", 14: "pill",
-        15: "book-open", 16: "clock", 17: "thermometer", 18: "moon",
-        19: "help-circle", 20: "timer-off",
+      const EXPLAIN = {
+        1:{ gram:"möchten + Infinitiv (вежливое «хотеть»); heute — обстоятельство времени.", alt:"Heute möchten wir tanzen.", vocab:"möchten — хотеть; tanzen — танцевать." },
+        2:{ gram:"mögen + Akk.; разговорнее: „gern“.", alt:"Ich esse gern Pizza.", vocab:"mögen — нравиться; essen — есть." },
+        3:{ gram:"in + Dativ: in Deutschland.", alt:"Ich will in Deutschland arbeiten.", vocab:"arbeiten — работать." },
+        4:{ gram:"sein + Adj.: Du bist schön.", alt:"Du siehst sehr schön aus.", vocab:"schön — красивый." },
+        5:{ gram:"Прилагательное после sein.", alt:"Mein Bruder ist noch klein.", vocab:"Bruder — брат; klein — маленький." },
+        6:{ gram:"sein + место: in Naryn.", alt:"Meine Eltern sind jetzt in Naryn.", vocab:"Eltern — родители." },
+        7:{ gram:"С неопред. значением нужен артикль: eine große Familie.", alt:"—", vocab:"Familie — семья; groß — большой." },
+        8:{ gram:"Числительные: zwei Kinder (без артикля).", alt:"—", vocab:"Kinder — дети." },
+        9:{ gram:"„viele“ + Pl.: Hausaufgaben — Pl.", alt:"—", vocab:"Hausaufgaben — дз." },
+        10:{ gram:"Формула имени: „Ich heiße …“ тоже ок.", alt:"Ich heiße Aizhan.", vocab:"heißen — называться." },
+        11:{ gram:"Вопрос о происхождении: „Kommst du aus …?“", alt:"Bist du aus Osch?", vocab:"kommen aus — быть родом из." },
+        12:{ gram:"weiß — форма wissen.", alt:"Keine Ahnung.", vocab:"wissen — знать." },
+        13:{ gram:"Nicht в конце: … Wort „Glas“ nicht.", alt:"Wir kennen das Wort „Glas“ nicht.", vocab:"das Wort — слово; das Glas — стакан." },
+        14:{ gram:"tun + Dativ mir weh.", alt:"Ich habe Kopfschmerzen.", vocab:"der Kopf — голова." },
+        15:{ gram:"gern — «с охотой»; вопрос: Lernst du gern …?", alt:"Magst du Deutsch lernen?", vocab:"lernen — учить." },
+        16:{ gram:"Hast du … Freizeit? Натуральнее: Zeit.", alt:"Hast du heute Zeit?", vocab:"Zeit — время; Freizeit — досуг." },
+        17:{ gram:"Sie — вежливая форма.", alt:"Geht es Ihnen nicht gut?", vocab:"krank — больной." },
+        18:{ gram:"ein bisschen = немного.", alt:"Ich bin etwas/ein wenig müde.", vocab:"müde — уставший." },
+        19:{ gram:"ihr — «вы» (мн.).", alt:"Habt ihr Fragen?", vocab:"Fragen — вопросы." },
+        20:{ gram:"keine Zeit — отрицание сущ.", alt:"Ich bin beschäftigt.", vocab:"Zeit — время." },
       };
 
-      const $ = (sel) => document.querySelector(sel);
-      const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-      const state = { shuffled: false, quiz: { score: 0, total: 0 }, rate: 1.0 };
+      /* ============== ICONS MAP ============== */
+      const ICONS = {
+        1:"music",2:"pizza",3:"briefcase",4:"sparkles",5:"user",6:"map-pin",7:"users",8:"baby",
+        9:"book-open",10:"badge",11:"map-pin",12:"help-circle",13:"cup-soda",14:"pill",15:"book-open",
+        16:"clock",17:"thermometer",18:"moon",19:"help-circle",20:"timer-off",
+      };
 
-      function speak(text, lang, which) {
-        if (!("speechSynthesis" in window)) return alert("Ваш браузер не поддерживает озвучку (Web Speech API).");
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = lang; u.rate = state.rate || 1.0;
-        if (which) {
-          const v = speechSynthesis.getVoices().find((v) => v.name === which);
-          if (v) u.voice = v;
-        } else {
-          const pref = speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith(lang.toLowerCase()));
-          if (pref) u.voice = pref;
+      /* ============== UTILITIES ============== */
+      const $ = (sel)=>document.querySelector(sel);
+      const $$ = (sel)=>Array.from(document.querySelectorAll(sel));
+      function applyLucide(){ if(window.lucide){ try{ window.lucide.createIcons({attrs:{class:"lci","stroke-width":1.8}});}catch{} } }
+      function shuffle(a){ return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]); }
+      function escapeHTML(s){ return (s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+      function normDE(s){
+        return (s||"").toLowerCase().trim()
+          .replaceAll(/[„“"']/g,'"').replaceAll(/[–—-]/g,"-").replaceAll(/\s+/g," ")
+          .replaceAll("ä","ae").replaceAll("ö","oe").replaceAll("ü","ue").replaceAll("ß","ss");
+      }
+      function tokenDiff(expected, got){
+        const e = normDE(expected).split(" ");
+        const g = normDE(got).split(" ");
+        const out=[], max=Math.max(e.length,g.length);
+        for(let i=0;i<max;i++){
+          if(g[i]===undefined){ out.push(`<mark class="diff">${escapeHTML(e[i]||"")}</mark>`); continue; }
+          if(e[i]===g[i]) out.push(`<mark class="ok">${escapeHTML(g[i])}</mark>`);
+          else out.push(`<mark class="diff">${escapeHTML(g[i])}</mark>`);
+        }
+        return out.join(" ");
+      }
+      // простая Левенштейн-похожесть
+      function levenshtein(a,b){
+        a=normDE(a); b=normDE(b);
+        const m=a.length,n=b.length;
+        const dp=Array.from({length:m+1},()=>Array(n+1).fill(0));
+        for(let i=0;i<=m;i++) dp[i][0]=i;
+        for(let j=0;j<=n;j++) dp[0][j]=j;
+        for(let i=1;i<=m;i++){
+          for(let j=1;j<=n;j++){
+            const cost = a[i-1]===b[j-1]?0:1;
+            dp[i][j]=Math.min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost);
+          }
+        }
+        const dist=dp[m][n];
+        const maxLen=Math.max(m,n)||1;
+        return Math.round((1 - dist/maxLen)*100);
+      }
+      function iconFor(it){ return `<i data-lucide="${ICONS[it.id]||"bookmark"}" class="lci" aria-hidden="true"></i>`; }
+
+      /* ============== STATE ============== */
+      const state = {
+        shuffled:false,
+        learnIndex:0,
+        learnReveal:false,
+        // practice
+        practiceSeq:[], prIndex:0, prMistakes:[],
+        // builder
+        buildSeq:[], bdIndex:0, bdTokens:[], bdPick:[],
+        // review (Leitner)
+        reviewQueue:[], rvIndex:0,
+      };
+
+      /* ============== DAILY GOAL ============== */
+      const GOAL_KEY="lek3_daily";
+      const GOAL_TOTAL=20;
+      function todayStr(){
+        const d=new Date();
+        const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), dd=String(d.getDate()).padStart(2,"0");
+        return `${y}-${m}-${dd}`;
+      }
+      function loadGoal(){
+        const all=JSON.parse(localStorage.getItem(GOAL_KEY)||"{}");
+        const day=todayStr();
+        if(!all[day]) all[day]={done:0,total:GOAL_TOTAL};
+        localStorage.setItem(GOAL_KEY, JSON.stringify(all));
+        return all[day];
+      }
+      function saveGoal(dayObj){
+        const all=JSON.parse(localStorage.getItem(GOAL_KEY)||"{}");
+        all[todayStr()]=dayObj;
+        localStorage.setItem(GOAL_KEY, JSON.stringify(all));
+      }
+      function renderGoal(){
+        const g=loadGoal();
+        $("#goalDone").textContent=g.done;
+        $("#goalTotal").textContent=g.total;
+        $("#goalFill").style.width=Math.min(100, Math.round(100*g.done/(g.total||1)))+"%";
+      }
+      function incDaily(n=1){
+        const g=loadGoal();
+        g.done=Math.min(g.total, g.done+n);
+        saveGoal(g); renderGoal();
+      }
+
+      /* ============== SPEECH SYNTH / VOICES ============== */
+      function speak(text, lang, which){
+        if(!("speechSynthesis" in window)) return alert("Ваш браузер не поддерживает озвучку (Web Speech API).");
+        const u=new SpeechSynthesisUtterance(text); u.lang=lang;
+        u.rate = parseFloat($("#rate")?.value || "1.0") || 1.0;
+        if(which){
+          const v=speechSynthesis.getVoices().find(v=>v.name===which);
+          if(v) u.voice=v;
+        }else{
+          const pref=speechSynthesis.getVoices().find(v=>v.lang.toLowerCase().startsWith(lang.toLowerCase()));
+          if(pref) u.voice=pref;
         }
         speechSynthesis.cancel(); speechSynthesis.speak(u);
       }
-      function byDifficulty(item) {
-        const diffEl = $("#difficulty");
-        const diff = diffEl ? diffEl.value : "all";
-        const len = item.de.length;
-        if (diff === "short") return len <= 22;
-        if (diff === "long") return len > 22;
-        return true;
-      }
-      function shuffle(arr) { return arr.map((v) => [Math.random(), v]).sort((a,b)=>a[0]-b[0]).map((x)=>x[1]); }
-      function escapeHTML(s) { return s.replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
-      function applyLucide(){ if(window.lucide){ try{ window.lucide.createIcons({ attrs:{ class:"lci","stroke-width":1.8 } }); }catch{} } }
-      function iconFor(it){ return `<i data-lucide="${ICONS[it.id]||"bookmark"}" class="lci" aria-hidden="true"></i>`; }
-
-      function renderList() {
-        const term = ($("#search").value || "").trim().toLowerCase();
-        const container = $("#list"); container.innerHTML = "";
-        let items = state.shuffled ? shuffle([...DATA]) : [...DATA];
-        for (const it of items) {
-          if (!byDifficulty(it)) continue;
-          const hay = (it.de + " " + it.ru).toLowerCase();
-          if (term && !hay.includes(term)) continue;
-          const card = document.createElement("article");
-          card.className = "card";
-          card.innerHTML = `
-            ${iconFor(it)}
-            <div>
-              <div class="de">${it.id}. ${escapeHTML(it.de)}</div>
-              <div class="ru">${escapeHTML(it.ru)}</div>
-            </div>
-            <div class="actions">
-              <button title="Озвучить по-немецки" aria-label="Озвучить по-немецки"><i data-lucide="volume" class="lci"></i></button>
-              <button title="Озвучить по-русски" aria-label="Озвучить по-русски"><i data-lucide="volume-2" class="lci"></i></button>
-            </div>`;
-          const [btnDE, btnRU] = card.querySelectorAll("button");
-          btnDE.addEventListener("click", () => speak(it.de,"de-DE", $("#voiceDE")?$("#voiceDE").value:undefined));
-          btnRU.addEventListener("click", () => speak(it.ru,"ru-RU", $("#voiceRU")?$("#voiceRU").value:undefined));
-          container.appendChild(card);
-        }
-        applyLucide();
-      }
-
-      // Flashcards
-      let flashIndex = 0, flashReveal = false, flashSequence = [...DATA];
-      function renderFlash(){ flashSequence = state.shuffled?shuffle([...DATA]):[...DATA]; flashIndex=0; flashReveal=false; updateFlash(); }
-      function updateFlash(){
-        const it = flashSequence[flashIndex];
-        $("#flashEmoji").innerHTML = `<i data-lucide="${ICONS[it.id]||"bookmark"}" class="big-lci"></i>`;
-        $("#flashFront").textContent = `${it.id}. ${it.de}`;
-        $("#flashBack").textContent = flashReveal ? it.ru : "Нажмите, чтобы увидеть перевод";
-        applyLucide();
-      }
-      $("#flashCard").addEventListener("click", ()=>{ flashReveal=!flashReveal; updateFlash(); });
-      $("#flashReveal").addEventListener("click", ()=>{ flashReveal=true; updateFlash(); });
-      $("#flashPrev").addEventListener("click", ()=>{ flashIndex=(flashIndex-1+flashSequence.length)%flashSequence.length; flashReveal=false; updateFlash(); });
-      $("#flashNext").addEventListener("click", ()=>{ flashIndex=(flashIndex+1)%flashSequence.length; flashReveal=false; updateFlash(); });
-      $("#flashSpeakDE").addEventListener("click", ()=> speak(flashSequence[flashIndex].de,"de-DE", $("#voiceDE")?$("#voiceDE").value:undefined));
-      $("#flashSpeakRU").addEventListener("click", ()=> speak(flashSequence[flashIndex].ru,"ru-RU", $("#voiceRU")?$("#voiceRU").value:undefined));
-      window.addEventListener("keydown",(e)=>{
-        const active = document.querySelector('.tab.active')?.dataset.tab;
-        if (active!=="flash") return;
-        if (e.key===" ") { e.preventDefault(); flashReveal=!flashReveal; updateFlash(); }
-        if (e.key==="ArrowRight") $("#flashNext").click();
-        if (e.key==="ArrowLeft")  $("#flashPrev").click();
-      });
-
-      // Quiz
-      function startQuiz(){
-        state.quiz.score=0; state.quiz.total=0; $("#quizScore").textContent="0 / 0";
-        const qs = shuffle([...DATA]).slice(0,10);
-        const area=$("#quizArea"); area.innerHTML="";
-        qs.forEach((q,i)=>{
-          const block=document.createElement("div"); block.className="quiz-q";
-          block.innerHTML=`<div class="de"><span class="tiny">Вопрос ${i+1}:</span> ${q.de}</div>`;
-          const answers=document.createElement("div"); answers.className="answers";
-          const wrongs=shuffle(DATA.filter(x=>x.id!==q.id)).slice(0,3);
-          const opts=shuffle([q,...wrongs]);
-          opts.forEach(opt=>{
-            const btn=document.createElement("button"); btn.className="answer"; btn.textContent=opt.ru;
-            btn.addEventListener("click",()=>{
-              if(btn.dataset.locked) return; btn.dataset.locked="1";
-              state.quiz.total++;
-              if(opt.id===q.id){ btn.classList.add("correct"); state.quiz.score++; speak("Правильно","ru-RU", $("#voiceRU")?$("#voiceRU").value:undefined); }
-              else{ btn.classList.add("wrong"); speak("Неправильно","ru-RU", $("#voiceRU")?$("#voiceRU").value:undefined); }
-              $("#quizScore").textContent=`${state.quiz.score} / ${state.quiz.total}`;
-              [...answers.children].forEach(b=>{ if(b.textContent===q.ru) b.classList.add("correct"); b.disabled=true; });
-            });
-            answers.appendChild(btn);
-          });
-          block.appendChild(answers); area.appendChild(block);
-        });
-      }
-      $("#quizStart").addEventListener("click", startQuiz);
-
-      // Verbs
-      const VERBS = {
-        möchten:[ "ich möchte","du möchtest","er/sie/es möchte","wir möchten","ihr möchtet","sie/Sie möchten" ],
-        mögen:[ "ich mag","du магst","er/sie/es mag","wir mögen","ihr mögt","sie/Sie mögen" ],
-        wissen:[ "ich weiß","du weißт","er/sie/es weiß","wir wissen","ihr wisst","sie/Sie wissen" ],
-        handeln:[ "ich handle","du handelst","er/sie/es handelt","wir handeln","ihr handelt","sie/Sie handeln" ],
-      };
-      function renderVerbs(){
-        const host=$("#verbs"); host.innerHTML="";
-        for(const [verb,forms] of Object.entries(VERBS)){
-          const card=document.createElement("div"); card.className="vcard";
-          card.innerHTML=`<h3>${verb}</h3>
-            <table><tbody>${
-              [
-                ["ich",forms[0]],["du",forms[1]],["er/sie/es",forms[2]],
-                ["wir",forms[3]],["ihr",forms[4]],["sie/Sie",forms[5]],
-              ].map(([p,f])=>`
-                <tr>
-                  <td style="width:90px">${p}</td>
-                  <td>${f}</td>
-                  <td style="width:54px;text-align:right">
-                    <button class="speak" data-t="${f}" title="Озвучить"><i data-lucide="volume" class="lci"></i></button>
-                  </td>
-                </tr>`).join("")
-            }</tbody></table>`;
-          card.querySelectorAll("button.speak").forEach(b=> b.addEventListener("click",()=> speak(b.dataset.t,"de-DE", $("#voiceDE")?$("#voiceDE").value:undefined)));
-          host.appendChild(card);
-        }
-        applyLucide();
-      }
-
-      // Numbers 0–100
-      const BASE = {
-        0:"null",1:"eins",2:"zwei",3:"drei",4:"vier",5:"fünf",6:"sechs",7:"sieben",8:"acht",9:"neun",
-        10:"zehn",11:"elf",12:"zwölf",13:"dreizehn",14:"vierzehn",15:"fünfzehn",16:"sechzehn",17:"siebzehn",
-        18:"achtzehn",19:"neunzehn",20:"zwanzig",30:"dreißig",40:"vierzig",50:"fünfzig",60:"sechzig",
-        70:"siebzig",80:"achtzig",90:"neunzig",100:"hundert",
-      };
-      function germanNumber(n){
-        if(n in BASE) return BASE[n];
-        if(n<100){
-          const tens=Math.floor(n/10)*10, u=n%10;
-          const unit=(u===1?"ein":"") || BASE[u];
-          return `${unit||""}${u===1?"":"und"}${BASE[tens]}`.replace("einsund","einund");
-        }
-        return "";
-      }
-      let nums=Array.from({length:101},(_,i)=>i), numsShuffled=false;
-      function renderNumbers(){
-        const q=($("#numSearch").value||"").toLowerCase().trim();
-        const arr=numsShuffled?shuffle(nums):nums;
-        const host=$("#numbers"); host.innerHTML="";
-        arr.forEach(n=>{
-          const word=germanNumber(n);
-          if(q && !(String(n).includes(q) || word.toLowerCase().includes(q))) return;
-          const card=document.createElement("div"); card.className="ncard";
-          card.innerHTML=`<div class="nnum">${n}</div><div class="nword">${word}</div>
-            <div><button class="speakN" data-t="${word}" title="Озвучить"><i data-lucide="volume" class="lci"></i></button></div>`;
-          card.querySelector("button.speakN").addEventListener("click",()=> speak(word,"de-DE", $("#voiceDE")?$("#voiceDE").value:undefined));
-          host.appendChild(card);
-        });
-        applyLucide();
-      }
-      $("#numSearch").addEventListener("input", renderNumbers);
-      $("#numShuffle").addEventListener("click", ()=>{ numsShuffled=!numsShuffled; renderNumbers(); });
-
-      // Voices
       function populateVoices(){
         const voices=speechSynthesis.getVoices();
         const deVoices=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));
@@ -526,32 +495,483 @@
       }
       if("speechSynthesis" in window){ speechSynthesis.onvoiceschanged=populateVoices; setTimeout(populateVoices,0); }
 
-      // Tabs (внизу)
+      /* ============== SEARCH LIST ============== */
+      function byDifficulty(it){
+        const diff=$("#difficulty")?.value || "all";
+        const len=it.de.length;
+        if(diff==="short") return len<=22;
+        if(diff==="long") return len>22;
+        return true;
+      }
+      function renderList(){
+        const term=($("#search").value||"").toLowerCase().trim();
+        const host=$("#list"); host.innerHTML="";
+        let items=state.shuffled?shuffle([...DATA]):[...DATA];
+        for(const it of items){
+          if(!byDifficulty(it)) continue;
+          const hay=(it.de+" "+it.ru).toLowerCase();
+          if(term && !hay.includes(term)) continue;
+          const card=document.createElement("article");
+          card.className="card";
+          card.innerHTML=`
+            ${iconFor(it)}
+            <div>
+              <div class="de">${it.id}. ${escapeHTML(it.de)}</div>
+              <div class="ru">${escapeHTML(it.ru)}</div>
+            </div>
+            <div class="actions">
+              <button title="Озвучить (DE)"><i data-lucide="volume" class="lci"></i></button>
+              <button title="Озвучить (RU)"><i data-lucide="volume-2" class="lci"></i></button>
+              <button title="Объяснить" data-exp="${it.id}"><i data-lucide="book-marked" class="lci"></i></button>
+            </div>`;
+          const [bDE,bRU,bEX] = card.querySelectorAll("button");
+          bDE.addEventListener("click",()=>speak(it.de,"de-DE", $("#voiceDE")?.value));
+          bRU.addEventListener("click",()=>speak(it.ru,"ru-RU", $("#voiceRU")?.value));
+          bEX.addEventListener("click",()=>openExplain(it.id));
+          host.appendChild(card);
+        }
+        applyLucide();
+      }
+
+      /* ============== LEARN ============== */
+      function setLearn(i){
+        state.learnIndex=i;
+        state.learnReveal=false;
+        const it = DATA[i];
+        $("#learnFront").textContent = `${it.id}. ${it.de}`;
+        $("#learnBack").textContent = "Нажмите «Показать перевод»";
+        $("#learnExplain").onclick=()=>openExplain(it.id);
+      }
+      function renderLearn(){ setLearn(state.learnIndex); }
+      $("#learnReveal").addEventListener("click", ()=>{ const it=DATA[state.learnIndex]; $("#learnBack").textContent=it.ru; });
+      $("#learnSpeakDE").addEventListener("click", ()=> speak(DATA[state.learnIndex].de,"de-DE", $("#voiceDE")?.value));
+      $("#learnSpeakRU").addEventListener("click", ()=> speak(DATA[state.learnIndex].ru,"ru-RU", $("#voiceRU")?.value));
+      $("#learnPrev").addEventListener("click", ()=>{ state.learnIndex=(state.learnIndex-1+DATA.length)%DATA.length; renderLearn(); });
+      $("#learnNext").addEventListener("click", ()=>{ state.learnIndex=(state.learnIndex+1)%DATA.length; renderLearn(); });
+      $("#learnExplain").addEventListener("click", ()=> openExplain(DATA[state.learnIndex].id));
+
+      /* ============== PRACTICE (RU→DE + voice) ============== */
+      function startPractice(){
+        state.practiceSeq = shuffle([...DATA]).slice(0,10);
+        state.prIndex = 0;
+        state.prMistakes = [];
+        $("#prProgress").textContent = `0 / ${state.practiceSeq.length}`;
+        $("#prMistakes").textContent = "0";
+        $("#prFeedback").classList.add("hidden");
+        $("#prHintBox").classList.add("hidden");
+        $("#prVoice").classList.add("hidden");
+        renderPractice();
+      }
+      function renderPractice(){
+        const cur = state.practiceSeq[state.prIndex];
+        $("#prTask").textContent = cur ? cur.ru : "Готово!";
+        $("#prInput").value = "";
+        $("#prFeedback").className = "feedback hidden";
+        $("#prHintBox").classList.add("hidden");
+        $("#prProgress").textContent = `${state.prIndex} / ${state.practiceSeq.length}`;
+        $("#prExplain").onclick = ()=>openExplain(cur.id);
+      }
+      function giveHintPractice(){
+        const cur = state.practiceSeq[state.prIndex];
+        const words = cur.de.split(" ");
+        const typed = $("#prInput").value.trim();
+        const typedCount = typed ? typed.split(/\s+/).length : 0;
+        const next = words[typedCount] || "";
+        const hint = next ? `${words.slice(0,typedCount).join(" ")} ${next.slice(0, Math.max(1, Math.ceil(next.length*0.4)))}…` : cur.de.slice(0, Math.ceil(cur.de.length*0.35))+"…";
+        $("#prHintBox").textContent = hint.trim();
+        $("#prHintBox").classList.remove("hidden");
+      }
+      function checkPractice(){
+        const cur = state.practiceSeq[state.prIndex];
+        const got = $("#prInput").value;
+        const good = normDE(got) === normDE(cur.de);
+        const fb = $("#prFeedback");
+        if(good){
+          fb.className = "feedback good";
+          fb.innerHTML = `<strong>Отлично!</strong> Совпадает: ${escapeHTML(cur.de)}`;
+          incDaily(1);
+          addToLeitner(cur.id,true);
+        }else{
+          fb.className = "feedback badmsg";
+          fb.innerHTML = `<strong>Есть отличия:</strong><br>${tokenDiff(cur.de, got)}<div class="tiny" style="margin-top:6px;">Эталон: ${escapeHTML(cur.de)}</div>`;
+          state.prMistakes.push(cur);
+          $("#prMistakes").textContent = String(state.prMistakes.length);
+          addToLeitner(cur.id,false);
+        }
+        fb.classList.remove("hidden");
+        const shown = Math.min(state.prIndex+1, state.practiceSeq.length);
+        $("#prProgress").textContent = `${shown} / ${state.practiceSeq.length}`;
+      }
+      function nextPractice(){
+        if(state.prIndex < state.practiceSeq.length-1){
+          state.prIndex++;
+          renderPractice();
+        }else{
+          const fb = $("#prFeedback");
+          fb.className = "feedback";
+          const errs = state.prMistakes.map(x=>`— ${escapeHTML(x.ru)} → <b>${escapeHTML(x.de)}</b>`).join("<br>");
+          fb.innerHTML = state.prMistakes.length
+            ? `<strong>Повторите эти фразы:</strong><br>${errs}`
+            : `<strong>Супер!</strong> Ошибок нет.`;
+          fb.classList.remove("hidden");
+        }
+      }
+      // voice input
+      let recog=null, recogOn=false;
+      function initRecog(){
+        const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(!R){ $("#prMic").classList.add("hidden"); return; }
+        recog = new R(); recog.lang = "de-DE"; recog.interimResults=false;
+        $("#prMic").classList.remove("hidden");
+        recog.onresult=(e)=>{
+          const t = Array.from(e.results).map(r=>r[0].transcript).join(" ");
+          $("#prInput").value = t;
+          const cur = state.practiceSeq[state.prIndex];
+          const score = levenshtein(cur.de, t);
+          const el = $("#prVoice");
+          el.innerHTML = `🎙️ Распознано: <em>${escapeHTML(t)}</em> · похожесть: <strong>${score}%</strong>`;
+          el.classList.remove("hidden");
+        };
+        recog.onend=()=>{ recogOn=false; $("#prMic").innerHTML='<i data-lucide="mic" class="lci"></i> Сказать'; applyLucide(); };
+      }
+      function toggleMic(){
+        if(!recog) return;
+        if(recogOn){ recog.stop(); return; }
+        $("#prVoice").classList.add("hidden");
+        recogOn=true; $("#prMic").innerHTML='<i data-lucide="square" class="lci"></i> Стоп'; applyLucide(); recog.start();
+      }
+
+      /* ============== BUILDER (собери из слов) ============== */
+      function startBuilder(){
+        state.buildSeq = shuffle([...DATA]).slice(0,10);
+        state.bdIndex=0;
+        renderBuilder();
+      }
+      function splitTokens(s){
+        // аккуратно режем по пробелам, сохраняя «Glas“» как единицу
+        return s.replaceAll("„","\"").replaceAll("“","\"").split(/\s+/);
+      }
+      function renderBuilder(){
+        const cur = state.buildSeq[state.bdIndex];
+        $("#bdTask").textContent = cur.ru;
+        state.bdTokens = shuffle(splitTokens(cur.de));
+        state.bdPick = [];
+        drawTokens();
+        $("#bdFeedback").classList.add("hidden");
+        $("#bdExplain").onclick = ()=>openExplain(cur.id);
+      }
+      function drawTokens(){
+        const pool=$("#bdTokens"); const ass=$("#bdAssembly");
+        pool.innerHTML=""; ass.innerHTML="";
+        state.bdTokens.forEach((tok,i)=>{
+          const b=document.createElement("button"); b.className="token"; b.textContent=tok;
+          b.addEventListener("click",()=>{ state.bdPick.push(tok); state.bdTokens.splice(i,1); drawTokens(); });
+          pool.appendChild(b);
+        });
+        state.bdPick.forEach((tok,i)=>{
+          const b=document.createElement("button"); b.className="token"; b.textContent=tok; b.title="Убрать";
+          b.addEventListener("click",()=>{ state.bdTokens.push(tok); state.bdPick.splice(i,1); drawTokens(); });
+          ass.appendChild(b);
+        });
+      }
+      function hintBuilder(){
+        const cur = state.buildSeq[state.bdIndex];
+        const target = splitTokens(cur.de);
+        // подсказываем следующий правильный токен по текущей сборке
+        const built = state.bdPick;
+        let nextIdx = built.length;
+        const nextTok = target[nextIdx] || target[0];
+        // если токен есть в пуле — подсвечиваем его подсказкой
+        const idx = state.bdTokens.findIndex(t=>normDE(t)===normDE(nextTok));
+        if(idx>=0){
+          const btn = $("#bdTokens").children[idx];
+          btn.style.outline = "2px solid #ffe08a";
+          setTimeout(()=>{ btn.style.outline=""; }, 900);
+        }
+      }
+      function checkBuilder(){
+        const cur = state.buildSeq[state.bdIndex];
+        const got = state.bdPick.join(" ");
+        const good = normDE(got)===normDE(cur.de);
+        const fb=$("#bdFeedback");
+        if(good){
+          fb.className="feedback good";
+          fb.innerHTML=`<strong>Отлично!</strong> ${escapeHTML(cur.de)}`;
+          incDaily(1);
+          addToLeitner(cur.id,true);
+        }else{
+          fb.className="feedback badmsg";
+          fb.innerHTML=`<strong>Почти:</strong><br>${tokenDiff(cur.de, got)}<div class="tiny" style="margin-top:6px;">Эталон: ${escapeHTML(cur.de)}</div>`;
+          addToLeitner(cur.id,false);
+        }
+        fb.classList.remove("hidden");
+      }
+      function nextBuilder(){
+        if(state.bdIndex < state.buildSeq.length-1){ state.bdIndex++; renderBuilder(); }
+        else {
+          const fb=$("#bdFeedback"); fb.className="feedback"; fb.innerHTML="<strong>Готово!</strong> Перейдите к Повтору или начните заново.";
+          fb.classList.remove("hidden");
+        }
+      }
+
+      /* ============== QUIZ ============== */
+      const quiz = { score:0, total:0 };
+      function startQuiz(){
+        quiz.score=0; quiz.total=0; $("#quizScore").textContent="0 / 0";
+        const qs=shuffle([...DATA]).slice(0,10);
+        const area=$("#quizArea"); area.innerHTML="";
+        qs.forEach((q,i)=>{
+          const block=document.createElement("div");
+          block.className="quiz-q";
+          block.innerHTML=`<div class="de"><span class="tiny">Вопрос ${i+1}:</span> ${q.de}</div>`;
+          const answers=document.createElement("div"); answers.className="answers";
+          const wrongs=shuffle(DATA.filter(x=>x.id!==q.id)).slice(0,3);
+          const opts=shuffle([q,...wrongs]);
+          opts.forEach(opt=>{
+            const btn=document.createElement("button"); btn.className="answer"; btn.textContent=opt.ru;
+            btn.addEventListener("click",()=>{
+              if(btn.dataset.locked) return; btn.dataset.locked="1";
+              quiz.total++;
+              if(opt.id===q.id){ btn.classList.add("correct"); quiz.score++; speak("Правильно","ru-RU", $("#voiceRU")?.value); incDaily(1); addToLeitner(q.id,true); }
+              else { btn.classList.add("wrong"); speak("Неправильно","ru-RU", $("#voiceRU")?.value); addToLeitner(q.id,false); }
+              $("#quizScore").textContent=`${quiz.score} / ${quiz.total}`;
+              [...answers.children].forEach(b=>{ if(b.textContent===q.ru) b.classList.add("correct"); b.disabled=true; });
+            });
+            answers.appendChild(btn);
+          });
+          block.appendChild(answers); area.appendChild(block);
+        });
+      }
+
+      /* ============== VERBS & NUMBERS ============== */
+      const VERBS = {
+        möchten:[ "ich möchte","du möchtest","er/sie/es möchte","wir möchten","ihr möchtet","sie/Sie möchten" ],
+        mögen:[ "ich mag","du magst","er/sie/es mag","wir mögen","ihr mögt","sie/Sie mögen" ],
+        wissen:[ "ich weiß","du weißt","er/sie/es weiß","wir wissen","ihr wisst","sie/Sie wissen" ],
+        handeln:[ "ich handle","du handelst","er/sie/es handelt","wir handeln","ihr handelt","sie/Sie handeln" ],
+      };
+      function renderVerbs(){
+        const host=$("#verbs"); host.innerHTML="";
+        const box=document.createElement("div"); box.className="panel";
+        box.innerHTML = Object.entries(VERBS).map(([verb,forms])=>`
+          <div class="panel" style="margin-bottom:10px;">
+            <h3 style="margin:0 0 8px 0;font-size:18px;">${verb}</h3>
+            ${forms.map(f=>`
+              <div class="row" style="justify-content:space-between;">
+                <div>${f}</div>
+                <button class="speak" data-t="${f}" title="Озвучить"><i data-lucide="volume" class="lci"></i></button>
+              </div>`).join("")}
+          </div>`).join("");
+        host.appendChild(box);
+        host.querySelectorAll("button.speak").forEach(b=> b.addEventListener("click",()=>speak(b.dataset.t,"de-DE", $("#voiceDE")?.value)));
+        applyLucide();
+      }
+
+      const BASE = {0:"null",1:"eins",2:"zwei",3:"drei",4:"vier",5:"fünф",6:"sechs",7:"sieben",8:"acht",9:"neun",10:"zehn",
+        11:"elf",12:"zwölf",13:"dreizehn",14:"vierzehn",15:"fünfzehn",16:"sechzehn",17:"siebzehn",18:"achtzehn",19:"neunzehn",
+        20:"zwanzig",30:"dreißig",40:"vierzig",50:"fünfzig",60:"sechzig",70:"siebzig",80:"achtzig",90:"neunzig",100:"hundert" };
+      function germanNumber(n){
+        if(n in BASE) return BASE[n];
+        if(n<100){
+          const t=Math.floor(n/10)*10,u=n%10;
+          const unit=(u===1?"ein":"")||BASE[u];
+          return `${unit||""}${u===1?"":"und"}${BASE[t]}`.replace("einsund","einund");
+        }
+        return "";
+      }
+      let nums=Array.from({length:101},(_,i)=>i), numsShuffled=false;
+      function renderNumbers(){
+        const q=($("#numSearch").value||"").toLowerCase().trim();
+        const arr=numsShuffled?shuffle(nums):nums;
+        const host=$("#numbers"); host.innerHTML="";
+        arr.forEach(n=>{
+          const word=germanNumber(n);
+          if(q && !(String(n).includes(q) || word.toLowerCase().includes(q))) return;
+          const card=document.createElement("div"); card.className="panel";
+          card.innerHTML=`<div style="font-size:22px;font-weight:800;">${n}</div>
+                          <div style="color:var(--muted)">${word}</div>
+                          <div class="row" style="margin-top:6px;">
+                            <button class="speakN" data-t="${word}" title="Озвучить"><i data-lucide="volume" class="lci"></i></button>
+                          </div>`;
+          card.querySelector(".speakN").addEventListener("click",()=>speak(word,"de-DE", $("#voiceDE")?.value));
+          host.appendChild(card);
+        });
+        applyLucide();
+      }
+
+      /* ============== EXPLAIN DIALOG ============== */
+      function openExplain(id){
+        const it = DATA.find(x=>x.id===id);
+        const ex = EXPLAIN[id] || {};
+        $("#explainBody").innerHTML = `
+          <div><strong>Фраза:</strong> ${escapeHTML(it.de)}</div>
+          <div><strong>Перевод:</strong> ${escapeHTML(it.ru)}</div>
+          <div class="modal-section"><strong>Грамматика:</strong> ${escapeHTML(ex.gram||"—")}</div>
+          <div class="modal-section"><strong>Естественно:</strong> ${escapeHTML(ex.alt||"—")}</div>
+          <div class="modal-section"><strong>Слова:</strong> ${escapeHTML(ex.vocab||"—")}</div>
+        `;
+        $("#explainDialog").showModal(); applyLucide();
+      }
+
+      /* ============== LEITNER SPACED REPETITION ============== */
+      const LKEY="lek3_leitner";
+      const BOX_INTERVALS=[1,2,4,7,15]; // дни
+      function loadLeitner(){
+        return JSON.parse(localStorage.getItem(LKEY)||"{}");
+      }
+      function saveLeitner(obj){ localStorage.setItem(LKEY, JSON.stringify(obj)); }
+      function addToLeitner(id, correct){
+        const store=loadLeitner();
+        const rec=store[id] || {box:1, due:Date.now()};
+        if(correct){
+          rec.box = Math.min(5, (rec.box||1)+1);
+        } else {
+          rec.box = 1;
+        }
+        const days = BOX_INTERVALS[rec.box-1] || 1;
+        rec.due = Date.now() + days*24*60*60*1000;
+        store[id]=rec; saveLeitner(store);
+        renderReviewDue();
+      }
+      function renderReviewDue(){
+        const store=loadLeitner();
+        const today = Date.now();
+        const due = Object.values(store).filter(r=>r.due<=today).length;
+        $("#rvDue").textContent = due;
+        const stats = [1,2,3,4,5].map(b=>{
+          const cnt=Object.values(store).filter(r=>r.box===b).length;
+          return `B${b}:${cnt}`;
+        }).join(" · ");
+        $("#rvStats").textContent = stats || "—";
+      }
+      function startReview(){
+        const store=loadLeitner();
+        const today=Date.now();
+        const ids=Object.entries(store).filter(([_,r])=>r.due<=today).map(([id])=>Number(id));
+        state.reviewQueue = ids.length ? ids : shuffle(DATA.map(d=>d.id)).slice(0,5); // если нет «должных» — дадим 5 случайных
+        state.rvIndex = 0;
+        renderReviewCard();
+      }
+      function renderReviewCard(){
+        const id = state.reviewQueue[state.rvIndex];
+        const it = DATA.find(x=>x.id===id);
+        if(!it){ $("#rvTask").textContent="Готово!"; return; }
+        $("#rvTask").textContent = it.ru;
+        $("#rvInput").value = "";
+        $("#rvFeedback").classList.add("hidden");
+      }
+      function checkReview(){
+        const id = state.reviewQueue[state.rvIndex];
+        const it = DATA.find(x=>x.id===id);
+        const got = $("#rvInput").value;
+        const ok = normDE(got)===normDE(it.de);
+        const fb=$("#rvFeedback");
+        if(ok){
+          fb.className="feedback good";
+          fb.innerHTML=`Верно: ${escapeHTML(it.de)}`;
+          incDaily(1);
+          addToLeitner(it.id,true);
+        } else {
+          fb.className="feedback badmsg";
+          fb.innerHTML=`Есть отличия:<br>${tokenDiff(it.de, got)}<div class="tiny" style="margin-top:6px;">Эталон: ${escapeHTML(it.de)}</div>`;
+          addToLeitner(it.id,false);
+        }
+        fb.classList.remove("hidden");
+        renderReviewDue();
+      }
+      function hardReview(){
+        const id = state.reviewQueue[state.rvIndex];
+        addToLeitner(id,false);
+        renderReviewDue();
+      }
+      function nextReview(){
+        if(state.rvIndex < state.reviewQueue.length-1){ state.rvIndex++; renderReviewCard(); }
+        else { $("#rvTask").textContent="Повтор завершён!"; }
+      }
+
+      /* ============== SETTINGS / TABS / EVENTS ============== */
       function activateTab(name){
-        $$(".tab").forEach(x=>{ const on=x.dataset.tab===name; x.classList.toggle("active",on); x.setAttribute("aria-selected", on?"true":"false"); });
+        $$(".tab").forEach(x=>{ const on=x.dataset.tab===name; x.classList.toggle("active",on); x.setAttribute("aria-selected",on?"true":"false"); });
         $$(".tab-panel").forEach(p=>p.classList.add("hidden"));
         const pane=$("#tab-"+name); if(pane) pane.classList.remove("hidden");
-        if(name==="flash") renderFlash();
+        if(name==="learn") renderLearn();
+        if(name==="practice"){ startPractice(); }
+        if(name==="build"){ startBuilder(); }
+        if(name==="quiz"){ /* ждём старт */ }
+        if(name==="review"){ renderReviewDue(); }
         if(name==="verbs") renderVerbs();
         if(name==="numbers") renderNumbers();
         applyLucide();
       }
-      document.querySelector(".tabs").addEventListener("click",(e)=>{
+      document.querySelector("nav.tabs").addEventListener("click",(e)=>{
         const tab=e.target.closest(".tab"); if(!tab) return; activateTab(tab.dataset.tab);
       });
 
-      // Controls
+      // search & shuffle
       $("#search").addEventListener("input", renderList);
-      $("#openSettings").addEventListener("click", ()=>{ $("#settingsDialog").showModal(); applyLucide(); });
-      $("#settingsDialog").addEventListener("close", ()=>{
-        const r=$("#rate"); if(r) state.rate=parseFloat(r.value)||1.0;
-        renderList(); renderFlash();
-      });
-      $("#difficulty")?.addEventListener("change", ()=>{ renderList(); renderFlash(); });
-      $("#shuffle").addEventListener("click", ()=>{ state.shuffled=!state.shuffled; renderList(); renderFlash(); });
+      $("#shuffle").addEventListener("click", ()=>{ state.shuffled=!state.shuffled; renderList(); renderLearn(); });
 
-      // Initial
-      renderList(); renderFlash(); renderVerbs(); renderNumbers(); applyLucide();
+      // settings
+      $("#openSettings").addEventListener("click", ()=> $("#settingsDialog").showModal());
+      $("#closeSettings").addEventListener("click", ()=> $("#settingsDialog").close());
+      $("#difficulty")?.addEventListener("change", ()=>{ renderList(); renderLearn(); });
+
+      // explain dialog close
+      $("#closeExplain").addEventListener("click", ()=> $("#explainDialog").close());
+
+      // practice events
+      $("#prHint").addEventListener("click", giveHintPractice);
+      $("#prCheck").addEventListener("click", checkPractice);
+      $("#prNext").addEventListener("click", nextPractice);
+      $("#prExplain").addEventListener("click", ()=> {
+        const cur = state.practiceSeq[state.prIndex]; openExplain(cur.id);
+      });
+      $("#prMic").addEventListener("click", toggleMic);
+
+      // builder events
+      $("#bdHint").addEventListener("click", hintBuilder);
+      $("#bdClear").addEventListener("click", ()=>{ state.bdPick=[]; drawTokens(); });
+      $("#bdCheck").addEventListener("click", checkBuilder);
+      $("#bdNext").addEventListener("click", nextBuilder);
+      $("#bdExplain").addEventListener("click", ()=> {
+        const cur = state.buildSeq[state.bdIndex]; openExplain(cur.id);
+      });
+
+      // quiz
+      $("#quizStart").addEventListener("click", startQuiz);
+
+      // review
+      $("#rvStart").addEventListener("click", startReview);
+      $("#rvCheck").addEventListener("click", checkReview);
+      $("#rvNext").addEventListener("click", nextReview);
+      $("#rvHard").addEventListener("click", hardReview);
+
+      // verbs cloze
+      function norm(s){ return (s||"").toLowerCase().trim().replaceAll("ö","oe").replaceAll("ä","ae").replaceAll("ü","ue").replaceAll("ß","ss"); }
+      $("#moeCheck").addEventListener("click", ()=>{
+        $$("#tab-verbs input").forEach(inp=>{
+          inp.classList.remove("ok","bad");
+          const want=(inp.dataset.a||"").split("|").map(norm);
+          const got=norm(inp.value);
+          inp.classList.add(want.includes(got)?"ok":"bad");
+        });
+      });
+      $("#moeShow").addEventListener("click", ()=>{
+        $$("#tab-verbs input").forEach(inp=>{
+          const ans=(inp.dataset.a||"").split("|")[0].replace("oe","ö");
+          inp.value=ans; inp.classList.remove("bad"); inp.classList.add("ok");
+        });
+      });
+
+      // numbers
+      $("#numSearch").addEventListener("input", renderNumbers);
+      $("#numShuffle").addEventListener("click", ()=>{ numsShuffled=!numsShuffled; renderNumbers(); });
+
+      // init voice recognition if available
+      initRecog();
+
+      /* ============== INITIAL RENDER ============== */
+      renderList(); renderLearn(); renderGoal(); applyLucide();
     </script>
   </body>
 </html>
