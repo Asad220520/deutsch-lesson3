@@ -1,471 +1,557 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Lektion 3</title>
-<meta name="description" content="Lerne 20 wichtige Sätze (Deutsch ↔ Russisch) mit Flashcards, Quiz & Sprachausgabe. Alles offline in einer Datei." />
-<style>
-  :root{
-    --bg:#000; --panel:#0a0a0a; --panel-2:#0a0a0a; --text:#f5f5f5; --muted:#a9a9a9; --border:#1f1f1f;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; background:var(--bg); color:var(--text)}
-  .wrap{max-width:720px; margin-inline:auto; padding:16px; padding-bottom:96px}
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lektion 3 — DE–RU Phrase Trainer</title>
+    <meta name="description" content="Lerne 20 wichtige Sätze (Deutsch ↔ Russisch) mit Flashcards, Quiz & Sprachausgabe. Alles offline in einer Datei." />
+    <style>
+      :root {
+        --bg: #000;
+        --panel: #0a0a0a;
+        --panel-2: #0a0a0a;
+        --text: #f5f5f5;
+        --muted: #a9a9a9;
+        --border: #1f1f1f;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--text);
+      }
+      /* больше нижний отступ, чтобы не перекрывать контент нижней панелью */
+      .wrap { max-width: 720px; margin-inline: auto; padding: 16px; padding-bottom: 112px; }
 
-  /* Header */
-  header{display:grid; gap:8px; grid-template-columns:1fr}
-  .title{font-size: clamp(20px, 5vw, 28px); font-weight:800; letter-spacing:.2px; display:flex; align-items:center; gap:10px}
-  .subtitle{color:var(--muted); font-size:14px}
+      /* Header */
+      header { display: grid; gap: 8px; grid-template-columns: 1fr; }
+      .title {
+        font-size: clamp(20px, 5vw, 28px);
+        font-weight: 800; letter-spacing: 0.2px;
+        display: flex; align-items: center; gap: 10px;
+      }
+      .subtitle { color: var(--muted); font-size: 14px; }
 
-  /* Panels & Cards */
-  .panel{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px}
-  .grid{display:grid; grid-template-columns:1fr; gap:12px}
-  .card{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:14px; display:grid; grid-template-columns: 44px 1fr auto; gap:10px; align-items:center}
-  .icon{font-size:28px; filter: grayscale(1) contrast(1.15);}
-  .img{width:32px; height:32px; border-radius:8px; object-fit:cover; border:1px solid var(--border); background:#111}
-  .de{font-weight:700; font-size: 18px}
-  .ru{color:var(--muted); margin-top:2px; font-size:15px}
+      /* Panels & Cards */
+      .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
+      .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+      .card {
+        background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+        padding: 14px; display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center;
+      }
+      .de { font-weight: 700; font-size: 18px; }
+      .ru { color: var(--muted); margin-top: 2px; font-size: 15px; }
 
-  /* Controls */
-  .controls{display:grid; grid-template-columns:1fr; gap:10px; margin-top:8px}
-  .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
-  input, select, button, .pill{appearance:none; background:#0b0b0b; border:1px solid var(--border); color:var(--text); border-radius:12px; padding:12px 14px; font:inherit; min-height:48px}
-  input[type="number"]{width:84px}
-  button{cursor:pointer}
-  button:active{transform: translateY(1px)}
-  .btn-accent{border-color:#fff}
-  .actions{display:flex; gap:6px; flex-wrap:wrap}
-  .tiny{font-size:12px; color:var(--muted)}
-  .hidden{display:none !important}
+      /* Controls */
+      .controls { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 8px; }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .flex { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+      input, select, button, .pill {
+        appearance: none; background: #0b0b0b; border: 1px solid var(--border);
+        color: var(--text); border-radius: 12px; padding: 12px 14px; font: inherit; min-height: 48px;
+      }
+      input[type="number"] { width: 84px; }
+      button { cursor: pointer; }
+      button:active { transform: translateY(1px); }
+      .btn-accent { border-color: #fff; }
+      .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+      .tiny { font-size: 12px; color: var(--muted); }
+      .hidden { display: none !important; }
+      .sr-only {
+        position: absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+        clip: rect(0,0,0,0); white-space: nowrap; border:0;
+      }
 
-  /* Tabs — icon only; sticky top for quick access on phones */
-  .tabs{position:sticky; top:0; z-index:50; background:rgba(0,0,0,.85); backdrop-filter: blur(6px); border-bottom:1px solid var(--border); margin-left:-16px; margin-right:-16px; padding:8px 16px; display:flex; gap:8px; justify-content:center}
-  .tab{width:56px; height:56px; display:grid; place-items:center; border:1px solid var(--border); border-radius:14px; font-size:24px; background:#0a0a0a}
-  .tab.active{outline:2px solid #fff; outline-offset:2px}
+      /* TABS — теперь внизу (fixed), как нижняя навигация */
+      .tabs {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 60;
+        background: rgba(0,0,0,0.9);
+        backdrop-filter: blur(6px);
+        border-top: 1px solid var(--border);
+        padding: 8px max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-bottom: calc(8px + env(safe-area-inset-bottom));
+        display: flex; gap: 8px; justify-content: space-between;
+        margin: 0; /* убрали отрицательные отступы, они были нужны для топ-бара */
+      }
+      .tab {
+        flex: 1;
+        height: 56px;
+        display: grid; place-items: center;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #0a0a0a;
+      }
+      .tab.active { outline: 2px solid #fff; outline-offset: 2px; }
 
-  /* Bottom nav for phones */
-  .bottom-nav{position:fixed; left:0; right:0; bottom:0; z-index:60; background:rgba(0,0,0,.9); border-top:1px solid var(--border); padding:8px max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); padding-bottom:calc(8px + env(safe-area-inset-bottom)); display:flex; gap:8px; justify-content:space-between}
-  .bottom-nav .tab{flex:1; border-radius:12px}
+      /* Flashcards */
+      .flash { display: grid; gap: 12px; }
+      .flash-card {
+        background: var(--panel); border: 1px solid var(--border); border-radius: 18px;
+        padding: 22px; text-align: center; min-height: 180px;
+        display: grid; place-items: center; gap: 6px; position: relative;
+      }
+      .flash-card .face { font-size: 22px; font-weight: 800; }
+      .flash-card .sub { color: var(--muted); font-size: 16px; }
+      .flash-card .big-emoji { position: absolute; top: 12px; left: 12px; }
 
-  /* Flashcards */
-  .flash{display:grid; gap:12px}
-  .flash-card{background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:22px; text-align:center; min-height:180px; display:grid; place-items:center; gap:6px; position:relative}
-  .flash-card .face{font-size:22px; font-weight:800}
-  .flash-card .sub{color:var(--muted); font-size:16px}
-  .flash-card .big-emoji{font-size:36px; position:absolute; top:12px; left:12px; filter:grayscale(1) contrast(1.1)}
-  .flash-card .big-img{position:absolute; top:12px; left:12px; width:44px; height:44px; border-radius:10px; object-fit:cover; border:1px solid var(--border); background:#111}
+      /* Quiz */
+      .quiz { display: grid; gap: 10px; }
+      .quiz-q { background: var(--panel); border: 1px solid var(--border); padding: 14px; border-radius: 14px; }
+      .answers { display: grid; gap: 8px; }
+      .answer { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: #0b0b0b; }
+      .answer.correct { outline: 2px solid #eaeaea; }
+      .answer.wrong { outline: 2px dashed #666; }
+      .score { font-weight: 700; }
 
-  /* Quiz */
-  .quiz{display:grid; gap:10px}
-  .quiz-q{background:var(--panel); border:1px solid var(--border); padding:14px; border-radius:14px}
-  .answers{display:grid; gap:8px}
-  .answer{padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:#0b0b0b}
-  .answer.correct{outline:2px solid #eaeaea}
-  .answer.wrong{outline:2px dashed #666}
-  .score{font-weight:700}
+      /* Verbs */
+      .vgrid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+      .vcard { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
+      .vcard h3 { margin: 0 0 8px 0; font-size: 18px; }
+      .vcard table { width: 100%; border-collapse: collapse; }
+      .vcard td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
+      .vcard tr:last-child td { border-bottom: 0; }
+      .cloze { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: grid; gap: 8px; }
+      .cloze .line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .cloze input { width: 120px; text-align: center; }
+      .ok { outline: 2px solid #d0ffd4; }
+      .bad { outline: 2px солид #ffb3c1; }
 
-  /* Verbs */
-  .vgrid{display:grid; grid-template-columns:1fr; gap:12px}
-  .vcard{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px}
-  .vcard h3{margin:0 0 8px 0; font-size:18px}
-  .vcard table{width:100%; border-collapse:collapse}
-  .vcard td{padding:8px 6px; border-bottom:1px solid var(--border)}
-  .vcard tr:last-child td{border-bottom:0}
-  .cloze{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px; display:grid; gap:8px}
-  .cloze .line{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  .cloze input{width:120px; text-align:center}
-  .ok{outline:2px solid #d0ffd4}
-  .bad{outline:2px solid #ffb3c1}
+      /* Numbers */
+      .numbers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .ncard { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; display: grid; gap: 6px; }
+      .nnum { font-size: 22px; font-weight: 800; }
+      .nword { color: var(--muted); }
 
-  /* Numbers */
-  .numbers-grid{display:grid; grid-template-columns: repeat(2, 1fr); gap:10px}
-  .ncard{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px; display:grid; gap:6px}
-  .nnum{font-size:22px; font-weight:800}
-  .nword{color:var(--muted)}
+      /* Lucide icon sizes */
+      .lci { width: 28px; height: 28px; stroke: currentColor; }
+      .big-lci { width: 44px; height: 44px; stroke: currentColor; }
 
-  /* A11y & mobile ergonomics */
-  @media (pointer:coarse){
-    .actions button{min-width:56px; min-height:44px}
-  }
-</style>
-</head>
-<body>
-  <div class="wrap">
-    <header>
-      <div>
-        <div class="title">📘 Lektion 3 tester Asad</div>
-        <div class="subtitle">20 wichtige Sätze · Озвучка · Картинки‑подсказки · Флеш‑карточки · Тест</div>
-      </div>
-      <nav class="tabs" role="tablist" aria-label="Режимы">
-  <button class="tab active" data-tab="list" role="tab" aria-selected="true" title="Список" aria-label="Список">📚</button>
-  <button class="tab" data-tab="flash" role="tab" aria-selected="false" title="Карточки" aria-label="Карточки">🃏</button>
-  <button class="tab" data-tab="quiz" role="tab" aria-selected="false" title="Тест" aria-label="Тест">📝</button>
-  <button class="tab" data-tab="verbs" role="tab" aria-selected="false" title="Глаголы" aria-label="Глаголы">🔤</button>
-  <button class="tab" data-tab="numbers" role="tab" aria-selected="false" title="Числа" aria-label="Числа">🔢</button>
-</nav>
-    </header>
+      /* Settings dialog */
+      dialog.settings {
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: #0b0b0b;
+        color: var(--text);
+        padding: 16px;
+        max-width: 640px;
+        width: 92vw;
+      }
+      dialog.settings::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); }
+      .settings-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+      .settings-row { display: grid; grid-template-columns: 160px 1fr; gap: 10px; align-items: center; }
+      @media (max-width: 520px) { .settings-row { grid-template-columns: 1fr; } }
+    </style>
+    <script src="https://unpkg.com/lucide@0.462.0/dist/umd/lucide.min.js"></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div>
+          <div class="title">
+            <i data-lucide="book-open" class="lci"></i>
+            Lektion 3 — DE–RU Phrase Trainer
+          </div>
+          <div class="subtitle">20 wichtige Sätze · Озвучка · Флеш-карточки · Тест</div>
+        </div>
+      </header>
 
-    <section class="controls panel" aria-label="Einstellungen">
-      <div class="row">
-        <label class="pill">🔍 <span class="sr-only">Поиск</span>
-          <input id="search" type="text" placeholder="Найти: слово на нем./рус." aria-label="Поиск" />
-        </label>
-        <button id="shuffle" class="btn-accent">🔀 Перемешать</button>
-        <label class="pill">🎯 Сложность
+      <section class="controls panel" aria-label="Einstellungen">
+        <div class="row">
+          <label class="pill" style="display:flex;align-items:center;gap:8px;">
+            <i data-lucide="search" class="lci" aria-hidden="true"></i>
+            <span class="sr-only">Поиск</span>
+            <input id="search" type="text" placeholder="Найти: слово на нем./рус." aria-label="Поиск" />
+          </label>
+
+          <button id="shuffle" class="btn-accent" title="Перемешать" aria-label="Перемешать">
+            <i data-lucide="shuffle" class="lci"></i>
+          </button>
+
+          <!-- Settings button opens modal -->
+          <button id="openSettings" title="Настройки" aria-label="Настройки">
+            <i data-lucide="settings-2" class="lci"></i>
+          </button>
+        </div>
+      </section>
+
+      <!-- LIST MODE -->
+      <section id="tab-list" class="tab-panel" role="tabpanel" aria-labelledby="Список">
+        <div id="list" class="grid" aria-live="polite"></div>
+      </section>
+
+      <!-- FLASHCARDS MODE -->
+      <section id="tab-flash" class="tab-panel hidden" role="tabpanel" aria-labelledby="Карточки">
+        <div class="flash">
+          <div class="flash-card" id="flashCard" tabindex="0" aria-label="Карточка — нажмите чтобы перевернуть">
+            <div class="big-emoji" id="flashEmoji"><i data-lucide="message-square" class="big-lci"></i></div>
+            <div class="face" id="flashFront">…</div>
+            <div class="sub" id="flashBack">&nbsp;</div>
+          </div>
+          <div class="flex">
+            <button id="flashPrev" title="Назад"><i data-lucide="chevron-left" class="lci"></i></button>
+            <button id="flashSpeakDE" class="btn-accent" title="Немецкий"><i data-lucide="volume" class="lci"></i></button>
+            <button id="flashSpeakRU" title="Русский"><i data-lucide="volume-2" class="lci"></i></button>
+            <button id="flashReveal" title="Показать перевод"><i data-lucide="eye" class="lci"></i></button>
+            <button id="flashNext" title="Вперёд"><i data-lucide="chevron-right" class="lci"></i></button>
+          </div>
+          <div class="tiny">Подсказка: пробел — перевернуть; ←/→ — навигация.</div>
+        </div>
+      </section>
+
+      <!-- QUIZ MODE -->
+      <section id="tab-quiz" class="tab-panel hidden" role="tabpanel" aria-labelledby="Тест">
+        <div class="quiz">
+          <div class="flex">
+            <button id="quizStart" class="btn-accent" title="Начать тест">
+              <i data-lucide="play" class="lci"></i> Начать тест (10 вопросов)
+            </button>
+            <div class="pill" style="display:flex;align-items:center;gap:8px;">
+              <i data-lucide="line-chart" class="lci" aria-hidden="true"></i>
+              <span>Результат: <span id="quizScore" class="score">0 / 0</span></span>
+            </div>
+          </div>
+          <div id="quizArea"></div>
+        </div>
+      </section>
+
+      <!-- VERBS MODE -->
+      <section id="tab-verbs" class="tab-panel hidden" role="tabpanel" aria-labelledby="Глаголы">
+        <div class="vgrid" id="verbs"></div>
+        <div class="cloze" id="moechtenCloze">
+          <strong>Вставьте подходящую форму глагола „möchten“:</strong>
+          <div class="line"><span>1.</span> <strong>Ich</strong> <input data-a="moechte|möchte" /> ein Eis. <span class="tiny">(Я хочу мороженое.)</span></div>
+          <div class="line"><span>2.</span> <strong>Du</strong> <input data-a="moechtest|möchtest" /> einen Kaffee? <span class="tiny">(Ты хочешь кофе?)</span></div>
+          <div class="line"><span>3.</span> <strong>Er</strong> <input data-a="moechte|möchte" /> ein Buch lesen. <span class="tiny">(Он хочет прочитать книгу.)</span></div>
+          <div class="line"><span>4.</span> <strong>Wir</strong> <input data-a="moechten|möchten" /> ein Zimmer mit Meerblick. <span class="tiny">(Мы хотим номер с видом на море.)</span></div>
+          <div class="line"><span>5.</span> <strong>Ihr</strong> <input data-a="moechtet|möchtet" /> eine Cola? <span class="tiny">(Вы хотите колу?)</span></div>
+          <div class="line"><span>6.</span> <strong>Sie</strong> <input data-a="moechten|möchten" /> ein Ticket nach Berlin. <span class="tiny">(Они хотят билет до Берлина.)</span></div>
+          <div class="row">
+            <button id="moeCheck" class="btn-accent">Проверить</button>
+            <button id="moeShow">Показать ответы</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- NUMBERS MODE -->
+      <section id="tab-numbers" class="tab-panel hidden" role="tabpanel" aria-labelledby="Числа">
+        <div class="panel">
+          <div class="row">
+            <label class="pill" style="display:flex;align-items:center;gap:8px;">
+              <i data-lucide="search" class="lci" aria-hidden="true"></i>
+              <span class="sr-only">Поиск числа</span>
+              <input id="numSearch" type="text" placeholder="Поиск: 21 / einundzwanzig" aria-label="Поиск числа" />
+            </label>
+            <button id="numShuffle" title="Перемешать"><i data-lucide="shuffle" class="lci"></i></button>
+          </div>
+        </div>
+        <div id="numbers" class="numbers-grid" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <!-- нижняя панель вкладок -->
+    <nav class="tabs" role="tablist" aria-label="Навигация">
+      <button class="tab active" data-tab="list" role="tab" aria-selected="true" title="Список" aria-label="Список">
+        <i data-lucide="book" class="lci"></i>
+      </button>
+      <button class="tab" data-tab="flash" role="tab" aria-selected="false" title="Карточки" aria-label="Карточки">
+        <i data-lucide="layers" class="lci"></i>
+      </button>
+      <button class="tab" data-tab="quiz" role="tab" aria-selected="false" title="Тест" aria-label="Тест">
+        <i data-lucide="edit-3" class="lci"></i>
+      </button>
+      <button class="tab" data-tab="verbs" role="tab" aria-selected="false" title="Глаголы" aria-label="Глаголы">
+        <i data-lucide="type" class="lci"></i>
+      </button>
+      <button class="tab" data-tab="numbers" role="tab" aria-selected="false" title="Числа" aria-label="Числа">
+        <i data-lucide="hash" class="lci"></i>
+      </button>
+    </nav>
+
+    <!-- SETTINGS DIALOG -->
+    <dialog id="settingsDialog" class="settings" aria-label="Настройки">
+      <form method="dialog" class="settings-grid">
+        <div class="settings-row">
+          <label for="difficulty"><strong>Сложность</strong></label>
           <select id="difficulty" aria-label="Сложность">
             <option value="all">Все</option>
             <option value="short">Короткие</option>
             <option value="long">Длинные</option>
           </select>
-        </label>
-        <label class="pill">🔈 Голос (DE)
+        </div>
+        <div class="settings-row">
+          <label for="voiceDE"><strong>Голос (DE)</strong></label>
           <select id="voiceDE" aria-label="Голос для немецкого"></select>
-        </label>
-        <label class="pill">🔉 Голос (RU)
+        </div>
+        <div class="settings-row">
+          <label for="voiceRU"><strong>Голос (RU)</strong></label>
           <select id="voiceRU" aria-label="Голос для русского"></select>
-        </label>
-        <label class="pill">🐢 Скорость
+        </div>
+        <div class="settings-row">
+          <label for="rate"><strong>Скорость речи</strong></label>
           <input id="rate" type="number" min="0.6" max="1.4" step="0.1" value="1.0" aria-label="Скорость речи" />
-        </label>
-      </div>
-      <div class="row">
-        <button id="resetProgress">♻️ Сбросить прогресс</button>
-        <button id="exportData">⬇️ Экспорт (JSON)</button>
-        <input type="file" id="importData" accept="application/json" class="hidden" />
-        <button id="importBtn">⬆️ Импорт</button>
-      </div>
-    </section>
-
-    <!-- LIST MODE -->
-    <section id="tab-list" class="tab-panel" role="tabpanel" aria-labelledby="Список">
-      <div id="list" class="grid" aria-live="polite"></div>
-    </section>
-
-    <!-- FLASHCARDS MODE -->
-    <section id="tab-flash" class="tab-panel hidden" role="tabpanel" aria-labelledby="Карточки">
-      <div class="flash">
-        <div class="flash-card" id="flashCard" tabindex="0" aria-label="Карточка — нажмите чтобы перевернуть">
-          <div class="big-emoji" id="flashEmoji">💬</div>
-          <div class="face" id="flashFront">…</div>
-          <div class="sub" id="flashBack"> </div>
         </div>
-        <div class="flex">
-          <button id="flashPrev">◀️ Назад</button>
-          <button id="flashSpeakDE" class="btn-accent">🔈 Немецкий</button>
-          <button id="flashSpeakRU">🔉 Русский</button>
-          <button id="flashReveal">👀 Показать перевод</button>
-          <button id="flashNext">Вперёд ▶️</button>
-          <button id="flashKnown">✅ Знаю</button>
+        <div class="row" style="justify-content:flex-end;">
+          <button id="closeSettings" class="btn-accent" value="close">
+            <i data-lucide="check" class="lci"></i> Готово
+          </button>
         </div>
-        <div class="tiny">Подсказка: нажмите пробел, чтобы перевернуть; ←/→ для навигации.</div>
-      </div>
-    </section>
+      </form>
+    </dialog>
 
-    <!-- QUIZ MODE -->
-    <section id="tab-quiz" class="tab-panel hidden" role="tabpanel" aria-labelledby="Тест">
-      <div class="quiz">
-        <div class="flex">
-          <button id="quizStart" class="btn-accent">▶️ Начать тест (10 вопросов)</button>
-          <div class="pill">📈 Результат: <span id="quizScore" class="score">0 / 0</span></div>
-        </div>
-        <div id="quizArea"></div>
-      </div>
-    </section>
-    <!-- VERBS MODE -->
-    <section id="tab-verbs" class="tab-panel hidden" role="tabpanel" aria-labelledby="Глаголы">
-      <div class="vgrid" id="verbs"></div>
-      <div class="cloze" id="moechtenCloze">
-        <strong>Вставьте подходящую форму глагола „möchten“:</strong>
-        <div class="line"><span>1.</span> <strong>Ich</strong> <input data-a="moechte|möchte"> ein Eis. <span class="tiny">(Я хочу мороженое.)</span></div>
-        <div class="line"><span>2.</span> <strong>Du</strong> <input data-a="moechtest|möchtest"> einen Kaffee? <span class="tiny">(Ты хочешь кофе?)</span></div>
-        <div class="line"><span>3.</span> <strong>Er</strong> <input data-a="moechte|möchte"> ein Buch lesen. <span class="tiny">(Он хочет прочитать книгу.)</span></div>
-        <div class="line"><span>4.</span> <strong>Wir</strong> <input data-a="moechten|möchten"> ein Zimmer mit Meerblick. <span class="tiny">(Мы хотим номер с видом на море.)</span></div>
-        <div class="line"><span>5.</span> <strong>Ihr</strong> <input data-a="moechtet|möchtet"> eine Cola? <span class="tiny">(Вы хотите колу?)</span></div>
-        <div class="line"><span>6.</span> <strong>Sie</strong> <input data-a="moechten|möchten"> ein Ticket nach Berlin. <span class="tiny">(Они хотят билет до Берлина.)</span></div>
-        <div class="row">
-          <button id="moeCheck" class="btn-accent">Проверить</button>
-          <button id="moeShow">Показать ответы</button>
-        </div>
-      </div>
-    </section>
+    <script>
+      // ===== DATA (20 фраз) =====
+      const DATA = [
+        { id: 1,  de: "Wir möchten heute tanzen.",             ru: "Мы сегодня хотим танцевать." },
+        { id: 2,  de: "Ich mag Pizza essen.",                  ru: "Мне нравится пицца." },
+        { id: 3,  de: "Ich möchte in Deutschland arbeiten.",   ru: "Я хочу работать в Германии." },
+        { id: 4,  de: "Du bist sehr schön.",                   ru: "Ты очень красивая(ый)." },
+        { id: 5,  de: "Mein Bruder ist klein.",                ru: "Мой брат маленький." },
+        { id: 6,  de: "Meine Eltern sind in Naryn.",           ru: "Мои родители в Нарыне." },
+        { id: 7,  de: "Ich habe große Familie.",               ru: "У меня большая семья." },
+        { id: 8,  de: "Er hat 2 Kinder.",                      ru: "У него 2 детей." },
+        { id: 9,  de: "Wir haben viele Hausaufgaben.",         ru: "У нас много дом. заданий." },
+        { id: 10, de: "Mein Name ist Aizhan.",                 ru: "Моё имя Айжан." },
+        { id: 11, de: "Bist du aus Osch?",                     ru: "Ты из Оша?" },
+        { id: 12, de: "Ich weiß nicht.",                       ru: "Я не знаю." },
+        { id: 13, de: 'Wir wissen das Wort "Glas" nicht.',     ru: 'Мы не знаем слово "стакан".' },
+        { id: 14, de: "Mein Kopf tut mir weh.",                ru: "У меня болит голова." },
+        { id: 15, de: "Magst du Deutsch lernen?",              ru: "Тебе нравится учить немецкий?" },
+        { id: 16, de: "Hast du heute Freizeit?",               ru: "У тебя есть сегодня свободное время?" },
+        { id: 17, de: "Sind Sie krank?",                       ru: "Вы болеете? / Вы больны?" },
+        { id: 18, de: "Ich bin ein bisschen müde.",            ru: "Я немного уставший." },
+        { id: 19, de: "Habt ihr noch Fragen?",                 ru: "У вас есть ещё вопросы?" },
+        { id: 20, de: "Ich habe keine Zeit.",                  ru: "У меня нет времени." }
+      ];
 
-    <!-- NUMBERS MODE -->
-    <section id="tab-numbers" class="tab-panel hidden" role="tabpanel" aria-labelledby="Числа">
-      <div class="panel">
-        <div class="row">
-          <label class="pill">🔎 <span class="sr-only">Поиск числа</span>
-            <input id="numSearch" type="text" placeholder="Поиск: 21 / einundzwanzig" aria-label="Поиск числа"/>
-          </label>
-          <button id="numShuffle">🔀 Перемешать</button>
-        </div>
-      </div>
-      <div id="numbers" class="numbers-grid" aria-live="polite"></div>
-    </section>
+      const ICONS = {
+        1: "music", 2: "pizza", 3: "briefcase", 4: "sparkles", 5: "user",
+        6: "map-pin", 7: "users", 8: "baby", 9: "book-open", 10: "badge",
+        11: "map-pin", 12: "help-circle", 13: "cup-soda", 14: "pill",
+        15: "book-open", 16: "clock", 17: "thermometer", 18: "moon",
+        19: "help-circle", 20: "timer-off",
+      };
 
-    <div class="spacer"></div>
-    <footer class="tiny">Сделано для Лекции 3. Все работает локально, без интернета. ✨</footer>
-    <nav class="bottom-nav" role="tablist" aria-label="Нижняя навигация">
-      <button class="tab active" data-tab="list" role="tab" aria-selected="true" title="Список" aria-label="Список">📚</button>
-      <button class="tab" data-tab="flash" role="tab" aria-selected="false" title="Карточки" aria-label="Карточки">🃏</button>
-      <button class="tab" data-tab="quiz" role="tab" aria-selected="false" title="Тест" aria-label="Тест">📝</button>
-      <button class="tab" data-tab="verbs" role="tab" aria-selected="false" title="Глаголы" aria-label="Глаголы">🔤</button>
-      <button class="tab" data-tab="numbers" role="tab" aria-selected="false" title="Числа" aria-label="Числа">🔢</button>
-    </nav>
-  </div>
+      const $ = (sel) => document.querySelector(sel);
+      const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+      const state = { shuffled: false, quiz: { score: 0, total: 0 }, rate: 1.0 };
 
-<script>
-const DATA = [
-  {id:1, icon:"💃", de:"Wir möchten heute tanzen.", ru:"Мы сегодня хотим танцевать."},
-  {id:2, icon:"🍕", de:"Ich mag Pizza essen.", ru:"Мне нравится пицца."},
-  {id:3, icon:"🇩🇪", de:"Ich möchte in Deutschland arbeiten.", ru:"Я хочу работать в Германии."},
-  {id:4, icon:"✨", de:"Du bist sehr schön.", ru:"Ты очень красивая(ый)."},
-  {id:5, icon:"👦", de:"Mein Bruder ist klein.", ru:"Моя брат маленький."},
-  {id:6, icon:"🗺️", de:"Meine Eltern sind in Naryn.", ru:"Мои родители в Нарыне."},
-  {id:7, icon:"👨‍👩‍👧‍👦", de:"Ich habe große Familie.", ru:"У меня большая семья."},
-  {id:8, icon:"🧒", de:"Er hat 2 Kinder.", ru:"У него 2 детей."},
-  {id:9, icon:"📚", de:"Wir haben viele Hausaufgaben.", ru:"У нас много дом.заданий."},
-  {id:10, icon:"🪪", de:"Mein Name ist Aizhan.", ru:"Моё имя Айжан."},
-  {id:11, icon:"🏙️", de:"Bist du aus Osch?", ru:"Ты из Оша?"},
-  {id:12, icon:"🤷", de:"Ich weiß nicht.", ru:"Я не знаю."},
-  {id:13, icon:"🥛", de:"Wir wissen das Wort \"Glas\" nicht.", ru:"Мы не знаем слово \"стакан\"."},
-  {id:14, icon:"🤕", de:"Mein Kopf tut mir weh.", ru:"У меня болит голова."},
-  {id:15, icon:"📖", de:"Magst du Deutsch lernen?", ru:"Тебе нравится учить немецкий?"},
-  {id:16, icon:"🕒", de:"Hast du heute Freizeit?", ru:"У тебя есть сегодня свободное время?"},
-  {id:17, icon:"🤒", de:"Sind Sie krank?", ru:"Вы болеете? / Вы больны?"},
-  {id:18, icon:"😪", de:"Ich bin ein bisschen müde.", ru:"Я немного уставший."},
-  {id:19, icon:"❓", de:"Habt ihr noch Fragen?", ru:"У вас есть еще вопросы?"},
-  {id:20, icon:"⏳", de:"Ich habe keine Zeit.", ru:"У меня нету времени."}
-];
+      function speak(text, lang, which) {
+        if (!("speechSynthesis" in window)) return alert("Ваш браузер не поддерживает озвучку (Web Speech API).");
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = lang; u.rate = state.rate || 1.0;
+        if (which) {
+          const v = speechSynthesis.getVoices().find((v) => v.name === which);
+          if (v) u.voice = v;
+        } else {
+          const pref = speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith(lang.toLowerCase()));
+          if (pref) u.voice = pref;
+        }
+        speechSynthesis.cancel(); speechSynthesis.speak(u);
+      }
+      function byDifficulty(item) {
+        const diffEl = $("#difficulty");
+        const diff = diffEl ? diffEl.value : "all";
+        const len = item.de.length;
+        if (diff === "short") return len <= 22;
+        if (diff === "long") return len > 22;
+        return true;
+      }
+      function shuffle(arr) { return arr.map((v) => [Math.random(), v]).sort((a,b)=>a[0]-b[0]).map((x)=>x[1]); }
+      function escapeHTML(s) { return s.replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+      function applyLucide(){ if(window.lucide){ try{ window.lucide.createIcons({ attrs:{ class:"lci","stroke-width":1.8 } }); }catch{} } }
+      function iconFor(it){ return `<i data-lucide="${ICONS[it.id]||"bookmark"}" class="lci" aria-hidden="true"></i>`; }
 
-const VERBS = {
-  "möchten": ["ich möchte","du möchtest","er/sie/es möchte","wir möchten","ihr möchtet","sie/Sie möchten"],
-  "mögen": ["ich mag","du magst","er/sie/es mag","wir mögen","ihr mögt","sie/Sie mögen"],
-  "wissen": ["ich weiß","du weißt","er/sie/es weiß","wir wissen","ihr wisst","sie/Sie wissen"],
-  "handeln": ["ich handle","du handelst","er/sie/es handelt","wir handeln","ihr handelt","sie/Sie handeln"],
-};
+      function renderList() {
+        const term = ($("#search").value || "").trim().toLowerCase();
+        const container = $("#list"); container.innerHTML = "";
+        let items = state.shuffled ? shuffle([...DATA]) : [...DATA];
+        for (const it of items) {
+          if (!byDifficulty(it)) continue;
+          const hay = (it.de + " " + it.ru).toLowerCase();
+          if (term && !hay.includes(term)) continue;
+          const card = document.createElement("article");
+          card.className = "card";
+          card.innerHTML = `
+            ${iconFor(it)}
+            <div>
+              <div class="de">${it.id}. ${escapeHTML(it.de)}</div>
+              <div class="ru">${escapeHTML(it.ru)}</div>
+            </div>
+            <div class="actions">
+              <button title="Озвучить по-немецки" aria-label="Озвучить по-немецки"><i data-lucide="volume" class="lci"></i></button>
+              <button title="Озвучить по-русски" aria-label="Озвучить по-русски"><i data-lucide="volume-2" class="lci"></i></button>
+            </div>`;
+          const [btnDE, btnRU] = card.querySelectorAll("button");
+          btnDE.addEventListener("click", () => speak(it.de,"de-DE", $("#voiceDE")?$("#voiceDE").value:undefined));
+          btnRU.addEventListener("click", () => speak(it.ru,"ru-RU", $("#voiceRU")?$("#voiceRU").value:undefined));
+          container.appendChild(card);
+        }
+        applyLucide();
+      }
 
-// ————— Utilities —————
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-const state = {
-  list: [...DATA],
-  shuffled: false,
-  known: new Set(JSON.parse(localStorage.getItem('lek3_known')||'[]')),
-  imgs: JSON.parse(localStorage.getItem('lek3_imgs')||'{}'),
-  quiz: {score:0, total:0},
-  voices: {de:null, ru:null},
-  rate: 1.0,
-};
-function saveKnown(){ localStorage.setItem('lek3_known', JSON.stringify([...state.known])); }
-function saveImgs(){ localStorage.setItem('lek3_imgs', JSON.stringify(state.imgs)); }
-function speak(text, lang, which){
-  if(!('speechSynthesis' in window)) return alert('Ваш браузер не поддерживает озвучку (Web Speech API).');
-  const u = new SpeechSynthesisUtterance(text); u.lang = lang; u.rate = state.rate || 1.0;
-  if(which){ const v = speechSynthesis.getVoices().find(v => v.name === which); if(v) u.voice = v; }
-  else { const pref = speechSynthesis.getVoices().find(v=> v.lang.toLowerCase().startsWith(lang.toLowerCase())); if(pref) u.voice = pref; }
-  speechSynthesis.cancel(); speechSynthesis.speak(u);
-}
-function byDifficulty(item){ const diff = $('#difficulty').value; const len = item.de.length; if(diff==='short') return len <= 22; if(diff==='long') return len > 22; return true; }
-function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
-function escapeHTML(s){ return s.replace(/[&<>\"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
-
-// ————— Render List —————
-function renderList(){
-  const term = ($('#search').value||'').trim().toLowerCase();
-  const container = $('#list'); container.innerHTML = '';
-  let items = [...DATA]; if(state.shuffled) items = shuffle(items);
-  for(const it of items){
-    if(!byDifficulty(it)) continue;
-    const hay = (it.de + ' ' + it.ru).toLowerCase(); if(term && !hay.includes(term)) continue;
-
-    const left = state.imgs[it.id] ? `<img class="img" src="${state.imgs[it.id]}" alt="Картинка для ${escapeHTML(it.de)}">` : `<div class=\"icon\" aria-hidden=\"true\">${it.icon}</div>`;
-    const card = document.createElement('article'); card.className = 'card';
-    card.innerHTML = `
-      ${left}
-      <div>
-        <div class="de">${it.id}. ${escapeHTML(it.de)}</div>
-        <div class="ru">${escapeHTML(it.ru)}</div>
-      </div>
-      <div class="actions">
-        <button title="Немецкий" aria-label="Озвучить по-немецки">🔈 DE</button>
-        <button title="Русский" aria-label="Озвучить по-русски">🔉 RU</button>
-        <button title="Скопировать" aria-label="Скопировать фразу">📋</button>
-        <button title="Картинка" aria-label="Добавить/сменить картинку">🖼️</button>
-        <button title="Знаю / не знаю" aria-label="Отметить как выучено">${state.known.has(it.id)?'✅':'⬜️'}</button>
-      </div>`;
-
-    const [btnDE, btnRU, btnCopy, btnImg, btnKnown] = card.querySelectorAll('button');
-    btnDE.addEventListener('click', ()=> speak(it.de, 'de-DE', $('#voiceDE').value));
-    btnRU.addEventListener('click', ()=> speak(it.ru, 'ru-RU', $('#voiceRU').value));
-    btnCopy.addEventListener('click', ()=> { navigator.clipboard.writeText(`${it.de} — ${it.ru}`); btnCopy.textContent='✔️'; setTimeout(()=>btnCopy.textContent='📋', 900); });
-    btnImg.addEventListener('click', ()=> setImageFor(it.id));
-    btnKnown.addEventListener('click', ()=>{ toggleKnown(it.id); btnKnown.textContent = state.known.has(it.id)?'✅':'⬜️'; });
-
-    container.appendChild(card);
-  }
-}
-function setImageFor(id){
-  const cur = state.imgs[id]||'';
-  const url = prompt('Вставьте ссылку на картинку (https://...)Оставьте пусто, чтобы удалить.', cur);
-  if(url===null) return; // canceled
-  if(url.trim()===''){ delete state.imgs[id]; }
-  else { state.imgs[id] = url.trim(); }
-  saveImgs(); renderList(); renderFlash();
-}
-function toggleKnown(id){ if(state.known.has(id)) state.known.delete(id); else state.known.add(id); saveKnown(); }
-
-// ————— Flashcards —————
-let flashIndex = 0; let flashReveal=false; let flashSequence=[...DATA];
-function renderFlash(){ flashSequence = state.shuffled ? shuffle([...DATA]) : [...DATA]; flashIndex = 0; flashReveal = false; updateFlash(); }
-function updateFlash(){
-  const it = flashSequence[flashIndex];
-  const img = state.imgs[it.id];
-  const badge = $('#flashEmoji');
-  if(img){ badge.innerHTML = `<img class='big-img' src='${img}' alt=''>`; }
-  else { badge.textContent = it.icon; }
-  $('#flashFront').textContent = `${it.id}. ${it.de}`;
-  $('#flashBack').textContent = flashReveal ? it.ru : 'Нажмите, чтобы увидеть перевод';
-}
-$('#flashCard').addEventListener('click', ()=>{ flashReveal = !flashReveal; updateFlash(); });
-$('#flashReveal').addEventListener('click', ()=>{ flashReveal = true; updateFlash(); });
-$('#flashPrev').addEventListener('click', ()=>{ flashIndex = (flashIndex-1+flashSequence.length)%flashSequence.length; flashReveal=false; updateFlash(); });
-$('#flashNext').addEventListener('click', ()=>{ flashIndex = (flashIndex+1)%flashSequence.length; flashReveal=false; updateFlash(); });
-$('#flashSpeakDE').addEventListener('click', ()=> speak(flashSequence[flashIndex].de,'de-DE',$('#voiceDE').value));
-$('#flashSpeakRU').addEventListener('click', ()=> speak(flashSequence[flashIndex].ru,'ru-RU',$('#voiceRU').value));
-$('#flashKnown').addEventListener('click', ()=>{ const it = flashSequence[flashIndex]; toggleKnown(it.id); updateFlash(); });
-window.addEventListener('keydown', (e)=>{
-  if($('.tab.active').dataset.tab!=='flash') return;
-  if(e.key===' ') { e.preventDefault(); flashReveal=!flashReveal; updateFlash(); }
-  if(e.key==='ArrowRight'){ $('#flashNext').click(); }
-  if(e.key==='ArrowLeft'){ $('#flashPrev').click(); }
-});
-
-// ————— Quiz —————
-function startQuiz(){
-  state.quiz.score = 0; state.quiz.total = 0; $('#quizScore').textContent = '0 / 0';
-  const qs = shuffle([...DATA]).slice(0,10);
-  const area = $('#quizArea'); area.innerHTML='';
-  qs.forEach((q,i)=>{
-    const block = document.createElement('div'); block.className='quiz-q';
-    block.innerHTML = `<div class=\"de\"><span class=\"tiny\">Вопрос ${i+1}:</span> ${q.de}</div>`;
-    const answers = document.createElement('div'); answers.className='answers';
-    const wrongs = shuffle(DATA.filter(x=>x.id!==q.id)).slice(0,3);
-    const opts = shuffle([q, ...wrongs]);
-    opts.forEach(opt=>{
-      const btn = document.createElement('button'); btn.className='answer'; btn.textContent = opt.ru;
-      btn.addEventListener('click', ()=>{
-        if(btn.dataset.locked) return; btn.dataset.locked = '1';
-        state.quiz.total++;
-        if(opt.id===q.id){ btn.classList.add('correct'); state.quiz.score++; speak('Правильно','ru-RU',$('#voiceRU').value); }
-        else { btn.classList.add('wrong'); speak('Неправильно','ru-RU',$('#voiceRU').value); }
-        $('#quizScore').textContent = `${state.quiz.score} / ${state.quiz.total}`;
-        [...answers.children].forEach(b=>{ if(b.textContent===q.ru) b.classList.add('correct'); b.disabled=true; });
+      // Flashcards
+      let flashIndex = 0, flashReveal = false, flashSequence = [...DATA];
+      function renderFlash(){ flashSequence = state.shuffled?shuffle([...DATA]):[...DATA]; flashIndex=0; flashReveal=false; updateFlash(); }
+      function updateFlash(){
+        const it = flashSequence[flashIndex];
+        $("#flashEmoji").innerHTML = `<i data-lucide="${ICONS[it.id]||"bookmark"}" class="big-lci"></i>`;
+        $("#flashFront").textContent = `${it.id}. ${it.de}`;
+        $("#flashBack").textContent = flashReveal ? it.ru : "Нажмите, чтобы увидеть перевод";
+        applyLucide();
+      }
+      $("#flashCard").addEventListener("click", ()=>{ flashReveal=!flashReveal; updateFlash(); });
+      $("#flashReveal").addEventListener("click", ()=>{ flashReveal=true; updateFlash(); });
+      $("#flashPrev").addEventListener("click", ()=>{ flashIndex=(flashIndex-1+flashSequence.length)%flashSequence.length; flashReveal=false; updateFlash(); });
+      $("#flashNext").addEventListener("click", ()=>{ flashIndex=(flashIndex+1)%flashSequence.length; flashReveal=false; updateFlash(); });
+      $("#flashSpeakDE").addEventListener("click", ()=> speak(flashSequence[flashIndex].de,"de-DE", $("#voiceDE")?$("#voiceDE").value:undefined));
+      $("#flashSpeakRU").addEventListener("click", ()=> speak(flashSequence[flashIndex].ru,"ru-RU", $("#voiceRU")?$("#voiceRU").value:undefined));
+      window.addEventListener("keydown",(e)=>{
+        const active = document.querySelector('.tab.active')?.dataset.tab;
+        if (active!=="flash") return;
+        if (e.key===" ") { e.preventDefault(); flashReveal=!flashReveal; updateFlash(); }
+        if (e.key==="ArrowRight") $("#flashNext").click();
+        if (e.key==="ArrowLeft")  $("#flashPrev").click();
       });
-      answers.appendChild(btn);
-    });
-    block.appendChild(answers);
-    area.appendChild(block);
-  });
-}
-$('#quizStart').addEventListener('click', startQuiz);
 
-// ————— Verbs & Möchten cloze —————
-function renderVerbs(){
-  const host = $('#verbs'); host.innerHTML='';
-  for(const [verb, forms] of Object.entries(VERBS)){
-    const card = document.createElement('div'); card.className='vcard';
-    card.innerHTML = `<h3>${verb}</h3>
-      <table><tbody>
-        ${[
-          ['ich', forms[0]],
-          ['du', forms[1]],
-          ['er/sie/es', forms[2]],
-          ['wir', forms[3]],
-          ['ihr', forms[4]],
-          ['sie/Sie', forms[5]],
-        ].map(([p,f])=>`<tr><td style='width:90px'>${p}</td><td>${f}</td><td style='width:54px; text-align:right'><button class='speak' data-t='${f}'>🔈</button></td></tr>`).join('')}
-      </tbody></table>`;
-    card.querySelectorAll('button.speak').forEach(b=> b.addEventListener('click', ()=> speak(b.dataset.t,'de-DE',$('#voiceDE').value)) );
-    host.appendChild(card);
-  }
-}
-function norm(s){ return (s||'').toLowerCase().trim().replaceAll('ö','oe').replaceAll('ä','ae').replaceAll('ü','ue').replaceAll('ß','ss'); }
-$('#moeCheck').addEventListener('click', ()=>{
-  $$('#moechtenCloze input').forEach(inp=>{
-    inp.classList.remove('ok','bad');
-    const want = (inp.dataset.a||'').split('|').map(norm);
-    const got = norm(inp.value);
-    if(want.includes(got)){ inp.classList.add('ok'); }
-    else { inp.classList.add('bad'); }
-  });
-});
-$('#moeShow').addEventListener('click', ()=>{
-  $$('#moechtenCloze input').forEach(inp=>{ const ans = (inp.dataset.a||''); inp.value = ans.split('|')[0].replace('oe','ö'); inp.classList.remove('bad'); inp.classList.add('ok'); });
-});
+      // Quiz
+      function startQuiz(){
+        state.quiz.score=0; state.quiz.total=0; $("#quizScore").textContent="0 / 0";
+        const qs = shuffle([...DATA]).slice(0,10);
+        const area=$("#quizArea"); area.innerHTML="";
+        qs.forEach((q,i)=>{
+          const block=document.createElement("div"); block.className="quiz-q";
+          block.innerHTML=`<div class="de"><span class="tiny">Вопрос ${i+1}:</span> ${q.de}</div>`;
+          const answers=document.createElement("div"); answers.className="answers";
+          const wrongs=shuffle(DATA.filter(x=>x.id!==q.id)).slice(0,3);
+          const opts=shuffle([q,...wrongs]);
+          opts.forEach(opt=>{
+            const btn=document.createElement("button"); btn.className="answer"; btn.textContent=opt.ru;
+            btn.addEventListener("click",()=>{
+              if(btn.dataset.locked) return; btn.dataset.locked="1";
+              state.quiz.total++;
+              if(opt.id===q.id){ btn.classList.add("correct"); state.quiz.score++; speak("Правильно","ru-RU", $("#voiceRU")?$("#voiceRU").value:undefined); }
+              else{ btn.classList.add("wrong"); speak("Неправильно","ru-RU", $("#voiceRU")?$("#voiceRU").value:undefined); }
+              $("#quizScore").textContent=`${state.quiz.score} / ${state.quiz.total}`;
+              [...answers.children].forEach(b=>{ if(b.textContent===q.ru) b.classList.add("correct"); b.disabled=true; });
+            });
+            answers.appendChild(btn);
+          });
+          block.appendChild(answers); area.appendChild(block);
+        });
+      }
+      $("#quizStart").addEventListener("click", startQuiz);
 
-// ————— Numbers 0–100 —————
-const BASE = {0:'null',1:'eins',2:'zwei',3:'drei',4:'vier',5:'fünf',6:'sechs',7:'sieben',8:'acht',9:'neun',10:'zehn',11:'elf',12:'zwölf',13:'dreizehn',14:'vierzehn',15:'fünfzehn',16:'sechzehn',17:'siebzehn',18:'achtzehn',19:'neunzehn',20:'zwanzig',30:'dreißig',40:'vierzig',50:'fünfzig',60:'sechzig',70:'siebzig',80:'achtzig',90:'neunzig',100:'hundert'};
-function germanNumber(n){
-  if(n in BASE) return BASE[n];
-  if(n<100){ const tens = Math.floor(n/10)*10, u = n%10; const unit = (u===1? 'ein':'') || BASE[u]; return `${unit || ''}${u===1?'':'und'}${BASE[tens]}`.replace('einsund','einund'); }
-  return '';
-}
-let nums = Array.from({length:101}, (_,i)=> i);
-let numsShuffled = false;
-function renderNumbers(){
-  const q = ($('#numSearch').value||'').toLowerCase().trim();
-  const arr = numsShuffled ? shuffle(nums) : nums;
-  const host = $('#numbers'); host.innerHTML='';
-  arr.forEach(n=>{
-    const word = germanNumber(n);
-    if(q && !(String(n).includes(q) || word.toLowerCase().includes(q))) return;
-    const card = document.createElement('div'); card.className='ncard';
-    card.innerHTML = `<div class='nnum'>${n}</div><div class='nword'>${word}</div><div><button class='speakN' data-t='${word}'>🔈</button></div>`;
-    card.querySelector('button.speakN').addEventListener('click', ()=> speak(word,'de-DE',$('#voiceDE').value));
-    host.appendChild(card);
-  });
-}
-$('#numSearch').addEventListener('input', renderNumbers);
-$('#numShuffle').addEventListener('click', ()=>{ numsShuffled = !numsShuffled; renderNumbers(); });
+      // Verbs
+      const VERBS = {
+        möchten:[ "ich möchte","du möchtest","er/sie/es möchte","wir möchten","ihr möchtet","sie/Sie möchten" ],
+        mögen:[ "ich mag","du магst","er/sie/es mag","wir mögen","ihr mögt","sie/Sie mögen" ],
+        wissen:[ "ich weiß","du weißт","er/sie/es weiß","wir wissen","ihr wisst","sie/Sie wissen" ],
+        handeln:[ "ich handle","du handelst","er/sie/es handelt","wir handeln","ihr handelt","sie/Sie handeln" ],
+      };
+      function renderVerbs(){
+        const host=$("#verbs"); host.innerHTML="";
+        for(const [verb,forms] of Object.entries(VERBS)){
+          const card=document.createElement("div"); card.className="vcard";
+          card.innerHTML=`<h3>${verb}</h3>
+            <table><tbody>${
+              [
+                ["ich",forms[0]],["du",forms[1]],["er/sie/es",forms[2]],
+                ["wir",forms[3]],["ihr",forms[4]],["sie/Sie",forms[5]],
+              ].map(([p,f])=>`
+                <tr>
+                  <td style="width:90px">${p}</td>
+                  <td>${f}</td>
+                  <td style="width:54px;text-align:right">
+                    <button class="speak" data-t="${f}" title="Озвучить"><i data-lucide="volume" class="lci"></i></button>
+                  </td>
+                </tr>`).join("")
+            }</tbody></table>`;
+          card.querySelectorAll("button.speak").forEach(b=> b.addEventListener("click",()=> speak(b.dataset.t,"de-DE", $("#voiceDE")?$("#voiceDE").value:undefined)));
+          host.appendChild(card);
+        }
+        applyLucide();
+      }
 
-// ————— Voices —————
-function populateVoices(){
-  const voices = speechSynthesis.getVoices();
-  const deVoices = voices.filter(v=> v.lang.toLowerCase().startsWith('de'));
-  const ruVoices = voices.filter(v=> v.lang.toLowerCase().startsWith('ru'));
-  function fill(sel, list){ const el = $(sel); const cur = el.value; el.innerHTML = list.map(v=>`<option value="${v.name}">${v.name} (${v.lang})</option>`).join(''); if(cur) el.value = cur; }
-  fill('#voiceDE', deVoices.length?deVoices:voices);
-  fill('#voiceRU', ruVoices.length?ruVoices:voices);
-}
-if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged = populateVoices; setTimeout(populateVoices, 0); }
+      // Numbers 0–100
+      const BASE = {
+        0:"null",1:"eins",2:"zwei",3:"drei",4:"vier",5:"fünf",6:"sechs",7:"sieben",8:"acht",9:"neun",
+        10:"zehn",11:"elf",12:"zwölf",13:"dreizehn",14:"vierzehn",15:"fünfzehn",16:"sechzehn",17:"siebzehn",
+        18:"achtzehn",19:"neunzehn",20:"zwanzig",30:"dreißig",40:"vierzig",50:"fünfzig",60:"sechzig",
+        70:"siebzig",80:"achtzig",90:"neunzig",100:"hundert",
+      };
+      function germanNumber(n){
+        if(n in BASE) return BASE[n];
+        if(n<100){
+          const tens=Math.floor(n/10)*10, u=n%10;
+          const unit=(u===1?"ein":"") || BASE[u];
+          return `${unit||""}${u===1?"":"und"}${BASE[tens]}`.replace("einsund","einund");
+        }
+        return "";
+      }
+      let nums=Array.from({length:101},(_,i)=>i), numsShuffled=false;
+      function renderNumbers(){
+        const q=($("#numSearch").value||"").toLowerCase().trim();
+        const arr=numsShuffled?shuffle(nums):nums;
+        const host=$("#numbers"); host.innerHTML="";
+        arr.forEach(n=>{
+          const word=germanNumber(n);
+          if(q && !(String(n).includes(q) || word.toLowerCase().includes(q))) return;
+          const card=document.createElement("div"); card.className="ncard";
+          card.innerHTML=`<div class="nnum">${n}</div><div class="nword">${word}</div>
+            <div><button class="speakN" data-t="${word}" title="Озвучить"><i data-lucide="volume" class="lci"></i></button></div>`;
+          card.querySelector("button.speakN").addEventListener("click",()=> speak(word,"de-DE", $("#voiceDE")?$("#voiceDE").value:undefined));
+          host.appendChild(card);
+        });
+        applyLucide();
+      }
+      $("#numSearch").addEventListener("input", renderNumbers);
+      $("#numShuffle").addEventListener("click", ()=>{ numsShuffled=!numsShuffled; renderNumbers(); });
 
-// ————— Tabs & Controls —————
-function activateTab(name){
-  $$('.tab').forEach(x=>{ const on = x.dataset.tab===name; x.classList.toggle('active', on); x.setAttribute('aria-selected', on?'true':'false'); });
-  $$('.tab-panel').forEach(p=> p.classList.add('hidden'));
-  const pane = $('#tab-'+name); if(pane) pane.classList.remove('hidden');
-  if(name==='flash') renderFlash();
-  if(name==='verbs') renderVerbs();
-  if(name==='numbers') renderNumbers();
-}
-$$('.tab').forEach(t=> t.addEventListener('click', ()=> activateTab(t.dataset.tab)));
+      // Voices
+      function populateVoices(){
+        const voices=speechSynthesis.getVoices();
+        const deVoices=voices.filter(v=>v.lang.toLowerCase().startsWith("de"));
+        const ruVoices=voices.filter(v=>v.lang.toLowerCase().startsWith("ru"));
+        const fill=(sel,arr)=>{ const el=$(sel); if(!el) return; const cur=el.value;
+          el.innerHTML=arr.map(v=>`<option value="${v.name}">${v.name} (${v.lang})</option>`).join("");
+          if(cur) el.value=cur;
+        };
+        fill("#voiceDE", deVoices.length?deVoices:voices);
+        fill("#voiceRU", ruVoices.length?ruVoices:voices);
+      }
+      if("speechSynthesis" in window){ speechSynthesis.onvoiceschanged=populateVoices; setTimeout(populateVoices,0); }
 
-$('#search').addEventListener('input', renderList);
-$('#difficulty').addEventListener('change', ()=>{ renderList(); renderFlash(); });
-$('#shuffle').addEventListener('click', ()=>{ state.shuffled = !state.shuffled; renderList(); renderFlash(); $('#shuffle').textContent = state.shuffled?'🔀 Перемешано':'🔀 Перемешать'; });
-$('#rate').addEventListener('input', ()=>{ state.rate = parseFloat($('#rate').value)||1.0; });
-$('#resetProgress').addEventListener('click', ()=>{ if(confirm('Сбросить отметки "Знаю"?')){ state.known.clear(); saveKnown(); renderList(); }});
-$('#exportData').addEventListener('click', ()=>{ const blob = new Blob([JSON.stringify({known:[...state.known], imgs: state.imgs}, null, 2)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='lektion3_progress.json'; a.click(); URL.revokeObjectURL(a.href); });
-$('#importBtn').addEventListener('click', ()=> $('#importData').click());
-$('#importData').addEventListener('change', async (e)=>{ const f = e.target.files[0]; if(!f) return; const text = await f.text(); try{ const j = JSON.parse(text); if(j.known) state.known = new Set(j.known); if(j.imgs) state.imgs = j.imgs; saveKnown(); saveImgs(); renderList(); renderFlash(); alert('Импортировано!'); } catch(err){ alert('Неверный файл.'); } });
+      // Tabs (внизу)
+      function activateTab(name){
+        $$(".tab").forEach(x=>{ const on=x.dataset.tab===name; x.classList.toggle("active",on); x.setAttribute("aria-selected", on?"true":"false"); });
+        $$(".tab-panel").forEach(p=>p.classList.add("hidden"));
+        const pane=$("#tab-"+name); if(pane) pane.classList.remove("hidden");
+        if(name==="flash") renderFlash();
+        if(name==="verbs") renderVerbs();
+        if(name==="numbers") renderNumbers();
+        applyLucide();
+      }
+      document.querySelector(".tabs").addEventListener("click",(e)=>{
+        const tab=e.target.closest(".tab"); if(!tab) return; activateTab(tab.dataset.tab);
+      });
 
-// Initial
-renderList();
-renderFlash();
-renderVerbs();
-renderNumbers();
-</script>
-</body>
+      // Controls
+      $("#search").addEventListener("input", renderList);
+      $("#openSettings").addEventListener("click", ()=>{ $("#settingsDialog").showModal(); applyLucide(); });
+      $("#settingsDialog").addEventListener("close", ()=>{
+        const r=$("#rate"); if(r) state.rate=parseFloat(r.value)||1.0;
+        renderList(); renderFlash();
+      });
+      $("#difficulty")?.addEventListener("change", ()=>{ renderList(); renderFlash(); });
+      $("#shuffle").addEventListener("click", ()=>{ state.shuffled=!state.shuffled; renderList(); renderFlash(); });
+
+      // Initial
+      renderList(); renderFlash(); renderVerbs(); renderNumbers(); applyLucide();
+    </script>
+  </body>
 </html>
